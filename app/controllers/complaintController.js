@@ -1,3 +1,7 @@
-const User = require('../models/Complaint');
+const Complaint = require('../models/Complaint');
 
-module.exports = {}
+const loadComplaints = () => {
+    return Complaint.find();
+  };
+
+module.exports = { loadComplaints }

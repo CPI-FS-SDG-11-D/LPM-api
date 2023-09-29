@@ -93,7 +93,9 @@ npm run start
 - Body: `none`
 - Usage:
   ```
-  curl -X GET URL_Patterns
+  curl -X GET \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
   ```
 - Response:
   - Success: (200)

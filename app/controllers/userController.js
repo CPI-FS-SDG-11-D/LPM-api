@@ -9,6 +9,12 @@ async function registerUser(req, res){
     const reqUser = req.body;
     const hashedPassword = await bcrypt.hash(reqUser.password, 10);
 
+    const existingUser = await User.find({ email: reqUser.email });
+
+    if (existingUser) {
+        return res.status(400).json({ message: 'Email is already registered' });
+    }
+
     const user = {
         username: reqUser.username,
         email: reqUser.email,
@@ -42,7 +48,7 @@ async function loginUser(req, res){
         const isPasswordValid = await bcrypt.compare(user.password, users[0].password);
 
         if(!isPasswordValid) {
-            res.status(404).json({ error: 'Password do not match' });
+            res.status(404).json({ message: 'Password not match' });
         } else {
             // Generate JWT Token
             const token = jwt.sign({ username : users[0].username }, accessToken, {expiresIn: '24h'});
@@ -51,7 +57,7 @@ async function loginUser(req, res){
         }
     } catch (err) {
         console.error('Error login user:', err);
-        res.status(404).json({ error: 'User not found' });
+        res.status(404).json({ message: 'User not found' });
     }
 }
 
@@ -64,7 +70,7 @@ async function profileUser(req, res){
         res.status(200).json({ user: users });
     } catch (err) {
         console.error('Error profile user:', err);
-        res.status(404).json({ error: 'User not found' });
+        res.status(404).json({ message: 'User not found' });
     }
 }
 

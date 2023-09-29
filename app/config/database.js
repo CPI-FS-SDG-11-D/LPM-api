@@ -3,7 +3,7 @@ require('dotenv').config();
 const mongoose = require('mongoose');
 
 // Set URL MongoDB
-const url = process.env.URL_DATABASE_COMPASS;
+const url = process.env.URL_DATABASE;
 
 mongoose.connect(url, {
     useNewUrlParser: true,

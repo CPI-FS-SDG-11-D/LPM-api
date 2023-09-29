@@ -14,7 +14,7 @@ npm run start
 ```
 
 ## How to Contribute
-- Create a new branch with the following naming convention: <your-name>/<feature-name>
+- Create a new branch with the following naming convention: `<your-name>/<feature-name>`
 - Make your changes
 - Push your changes to the branch you created
 - Create a pull request to merge your branch into main
@@ -93,7 +93,9 @@ npm run start
 - Body: `none`
 - Usage:
   ```
-  curl -X GET URL_Patterns
+  curl -X GET \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
   ```
 - Response:
   - Success: (200)

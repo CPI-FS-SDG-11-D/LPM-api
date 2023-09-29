@@ -2,25 +2,30 @@ const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
 const { Schema } = mongoose;
 
-const complaintSchema = new Schema({
+const complaintSchema = new Schema(
+  {
     userID: {
       type: ObjectId,
-      required: true
+      required: true,
     },
     title: {
       type: String,
-      required: true
+      required: true,
     },
     description: {
       type: String,
-      required: true
+      required: true,
     },
     upvote: {
-      type: Number
+      type: Number,
     },
     downvote: {
-      type: Number
+      type: Number,
     },
-  });
+  },
+  {
+    timestamps: true,
+  }
+);
 
-  module.exports = mongoose.model("Complaint", complaintSchema);
+module.exports = mongoose.model("Complaint", complaintSchema);

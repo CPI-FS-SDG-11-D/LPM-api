@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // List API
 app.use('/api', cors(), userRoutes);
-app.use('/api', cors(), complaintRoutes);
+app.use('/api/complaints', cors(), complaintRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

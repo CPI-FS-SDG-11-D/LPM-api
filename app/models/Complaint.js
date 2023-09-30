@@ -7,20 +7,20 @@ const complaintSchema = new Schema(
     userID: {
       type: ObjectId,
       required: true,
+      index: true,
+      ref: 'User'
     },
     title: {
       type: String,
-      required: true,
+      required: true
     },
     description: {
       type: String,
-      required: true,
+      required: true
     },
-    upvote: {
-      type: Number,
-    },
-    downvote: {
-      type: Number,
+    keterangan: {
+      type: String,
+      required: true
     },
   },
   {

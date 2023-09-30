@@ -125,35 +125,32 @@ This endpoint allows you to get a list of all the complaints that have been subm
 - Authetication: `false`
 - Body: `none`
 - Usage:
-To use this endpoint with curl, you can run the following command in your terminal:
 
 ```bash
-curl https://example.com/api/complaints/
+curl -X GET URL Patterns
 ```
 
-If the request is successful, you will receive a 200 OK response with a JSON object that contains an array of complaints. Each complaint has an `_id`, a `title`, a `description`, a `keterangan`, a `username`, an `upvotes` and a `downvotes` property. For example:
-
-```json
-{
-    "complaints": [
-        {
-            "_id": ObjectId,
-            "title": String,
-            "description": String,
-            "keterangan": String,
-            "username": String,
-            "upvotes": Number,
-            "downvotes": Number
-        },
-        // more complaints ...
-    ]
-}
-```
-
-If the request fails, you will receive a 500 Internal Server Error response with a JSON object that contains an `error` property with a message. For example:
-
-```json
-{ 
-    "error": "Internal server error" 
-}
-```
+- Response:
+  - Success: (200)
+    ```json
+    {
+        "complaints": [
+            {
+                "_id": ObjectId,
+                "title": String,
+                "description": String,
+                "keterangan": String,
+                "username": String,
+                "upvotes": Number,
+                "downvotes": Number
+            },
+            // more complaints ...
+        ]
+    }
+    ```
+  - Errors: (500)
+    ```json
+    { 
+        "error": "Internal server error" 
+    }
+    ```

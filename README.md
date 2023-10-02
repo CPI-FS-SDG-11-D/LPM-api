@@ -61,14 +61,14 @@ npm run start
 - Body:
   ```json
   {
-    "username": String,
+    "email": String,
     "password": String
   }
   ```
 - Usage:
   ```
   curl -X POST \
-  -d '{ "username": "username",
+  -d '{ "email": "email",
     "password": "password"}' \
   URL_Patterns
   ```

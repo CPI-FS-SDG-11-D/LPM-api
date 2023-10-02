@@ -22,6 +22,16 @@ const complaintSchema = new Schema(
       type: String,
       required: true
     },
+    upvote: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    downvote: {
+      type: Number,
+      required: true,
+      default: 0
+    },  
   },
   {
     timestamps: true,

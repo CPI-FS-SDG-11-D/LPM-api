@@ -10,8 +10,7 @@ add authentication function after url before controller
 example: router.get('/profile', **authentication**, userController.profileUser)
 */
 
-router.post('/register', userController.registerUser)
-router.post('/login', userController.loginUser)
 router.get('/profile', authentication, userController.profileUser)
+router.get('/history', authentication, userController.historyUser)
   
 module.exports = router;

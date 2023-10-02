@@ -6,6 +6,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 
 // Import Routes
+const authRoutes = require('./app/routes/authRoute');
 const userRoutes = require('./app/routes/userRoute');
 const complaintRoutes = require('./app/routes/complaintRoute');
 
@@ -17,6 +18,7 @@ app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
 
 // List API
+app.use('/api', cors(), authRoutes);
 app.use('/api', cors(), userRoutes);
 app.use('/api/complaints', cors(), complaintRoutes);
 

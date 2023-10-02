@@ -1,77 +1,30 @@
-require('dotenv').config();
-
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
 const User = require('../models/User');
-const accessToken = process.env.SECRET_TOKEN;
-
-async function registerUser(req, res){
-    const reqUser = req.body;
-    const hashedPassword = await bcrypt.hash(reqUser.password, 10);
-
-    const existingUser = await User.findOne({ email: reqUser.email });
-
-    if (existingUser) {
-        return res.status(400).json({ message: 'Email is already registered' });
-    }
-
-    const user = {
-        username: reqUser.username,
-        email: reqUser.email,
-        password: hashedPassword
-    }
-
-    try {
-        const newUser = new User(user)
-        const saveUser = await newUser.save();
-
-        // Generate JWT Token
-        const token = jwt.sign({ username : user.username }, accessToken, {expiresIn: '24h'});
-
-        res.status(200).json({ token: token });
-    } catch (err) {
-        console.error('Error register user:', err);
-        res.status(500).json({ error: 'Internal server error' });
-    }
-}
-
-async function loginUser(req, res){
-    const reqUser = req.body;
-    const user = {
-        email: reqUser.email,
-        password: reqUser.password
-    }
-
-    try {
-        const users = await User.find({ email: user.email }, 'username email password');
-
-        const isPasswordValid = await bcrypt.compare(user.password, users[0].password);
-
-        if(!isPasswordValid) {
-            res.status(404).json({ message: 'Password not match' });
-        } else {
-            // Generate JWT Token
-            const token = jwt.sign({ username : users[0].username }, accessToken, {expiresIn: '24h'});
-
-            res.status(200).json({ token: token });
-        }
-    } catch (err) {
-        console.error('Error login user:', err);
-        res.status(404).json({ message: 'User not found' });
-    }
-}
+const Complaint = require("../models/Complaint");
 
 async function profileUser(req, res){
-    const reqUsername = req.user;
+    const reqUser = req.user;
 
     try {
-        const users = await User.find({ username: reqUsername.username }, 'username email');
+        const user = await User.find({ _id: reqUser.userId }, 'username email');
 
-        res.status(200).json({ user: users });
+        res.status(200).json({ user: user });
     } catch (err) {
         console.error('Error profile user:', err);
         res.status(404).json({ message: 'User not found' });
     }
 }
 
-module.exports = { registerUser, profileUser, loginUser }
+async function historyUser(req, res){
+    const reqUser = req.user;
+
+    try {
+        const complaints = await Complaint.find({ userID: reqUser.userId }).sort({ created_at: -1 });
+
+        res.status(200).json({ complaints: complaints });
+    } catch (err) {
+        console.error('Error get complaints:', err);
+        res.status(404).json({ message: 'Complaints not found' });
+    }
+}
+
+module.exports = { profileUser, historyUser }

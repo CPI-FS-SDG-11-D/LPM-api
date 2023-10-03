@@ -116,7 +116,42 @@ npm run start
     }
     ```
 
-### 4. Get All Complaints
+### 4. History Complaints User
+- Method: `GET`
+- URL Patterns: `/api/history`
+- Authetication: `true`
+- Body: `none`
+- Usage:
+  ```
+  curl -X GET \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+        "complaints": [
+            {
+                "_id": ObjectId,
+                "userID": ObjectId,
+                "title": String,
+                "description": String,
+                "upvote": Number,
+                "downvote": Number,
+                "createdAt": Date
+            },
+        ]
+    }
+    ```
+  - Errors: (404)
+    ```json
+    {
+      "message": "Complaint not found"
+    }
+    ```
+
+### 5. Get All Complaints
 
 This endpoint allows you to get a list of all the complaints that have been submitted by the users. You can use the GET method to request this endpoint without any authentication or body parameters.
 
@@ -152,5 +187,55 @@ curl -X GET URL Patterns
     ```json
     { 
         "error": "Internal server error" 
+    }
+    ```
+
+### 5. Upvote Complaint
+- Method: `PUT`
+- URL Patterns: `/api/upvote/:complaintID`
+- Authetication: `true`
+- Body: `none`
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "upvote": Number
+    }
+    ```
+  - Errors: (409)
+    ```json
+    {
+      "message": "User already voted"
+    }
+    ```
+
+### 5. Downvote Complaint
+- Method: `PUT`
+- URL Patterns: `/api/downvote/:complaintID`
+- Authetication: `true`
+- Body: `none`
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "downvote": Number
+    }
+    ```
+  - Errors: (409)
+    ```json
+    {
+      "message": "User already voted"
     }
     ```

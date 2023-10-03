@@ -1,6 +1,5 @@
 const User = require('../models/User');
 const Complaint = require("../models/Complaint");
-const Feedback = require('../models/Feedback');
 
 async function profileUser(req, res){
     const reqUser = req.user;
@@ -19,11 +18,11 @@ async function historyUser(req, res){
     const reqUser = req.user;
 
     try {
-        const feedbacks = await Feedback.find({ userID: reqUser.userId }).sort({ created_at: -1 });
+        const complaints = await Complaint.find({ userID: reqUser.userId }).sort({ created_at: -1 });
 
-        res.status(200).json({ feedbacks: feedbacks });
+        res.status(200).json({ complaints: complaints });
     } catch (err) {
-        console.error('Error get feedbacks:', err);
+        console.error('Error get complaints:', err);
         res.status(404).json({ message: 'Complaints not found' });
     }
 }

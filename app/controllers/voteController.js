@@ -13,12 +13,7 @@ async function upvoteComplaint(req, res){
     }
 
     if (complaint) {
-        await Complaint.findByIdAndUpdate(reqComplaint.id, { upvote: complaint.upvote + 1 },
-            {
-                new: true,
-                runValidators: true
-            }
-        );
+        await Complaint.findByIdAndUpdate(reqComplaint.id, { upvote: complaint.upvote + 1 }, { new: true, runValidators: true }); // Update upvote complaint
     } else {
         return res.status(404).json({ message: 'Complaint not found' });
     }
@@ -27,7 +22,7 @@ async function upvoteComplaint(req, res){
         const newUpvote = new Upvote({ userID: reqUser.userId, complaintID: reqComplaint.id, count: 1 })
         await newUpvote.save();
 
-        res.status(200).json({ message: 'Upvote successfully' });
+        res.status(200).json({ upvote: complaint.upvote + 1 });
     } catch (err) {
         console.error('Error save upvote:', err);
         res.status(500).json({ message: 'Internal server error' });
@@ -45,12 +40,7 @@ async function downvoteComplaint(req, res){
     }
 
     if (complaint) {
-        await Complaint.findByIdAndUpdate(reqComplaint.id, { downvote: complaint.downvote + 1 },
-            {
-                new: true,
-                runValidators: true
-            }
-        );
+        await Complaint.findByIdAndUpdate(reqComplaint.id, { downvote: complaint.downvote + 1 }, { new: true, runValidators: true }); // Update downvote complaint
     } else {
         return res.status(404).json({ message: 'Complaint not found' });
     }
@@ -59,7 +49,7 @@ async function downvoteComplaint(req, res){
         const newDownvote = new Downvote({ userID: reqUser.userId, complaintID: reqComplaint.id, count: 1 })
         await newDownvote.save();
 
-        res.status(200).json({ message: 'Downvote successfully' });
+        res.status(200).json({ upvote: complaint.upvote + 1 });
     } catch (err) {
         console.error('Error save downvote:', err);
         res.status(500).json({ message: 'Internal server error' });

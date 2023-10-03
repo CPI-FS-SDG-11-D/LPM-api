@@ -12,7 +12,7 @@ async function registerUser(req, res){
     const existingUser = await User.findOne({ email }); // Find user email in database
 
     if (existingUser) {
-        return res.status(400).json({ message: 'Email is already registered' });
+        return res.status(401).json({ message: 'Email is already registered' });
     }
 
     try {
@@ -36,7 +36,7 @@ async function loginUser(req, res){
         const isPasswordValid = await bcrypt.compare(password, user[0].password); // Match password
 
         if(!isPasswordValid) {
-            res.status(404).json({ message: 'Password not match' });
+            res.status(401).json({ message: 'Password not match' });
         } else {
             const token = jwt.sign({ userId : user[0]._id }, accessToken, {expiresIn: '24h'}); // Generate JWT Token
 

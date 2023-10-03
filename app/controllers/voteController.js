@@ -9,7 +9,7 @@ async function upvoteComplaint(req, res){
     const upvote = await Upvote.findOne({ userID: reqUser.userId, complaintID: reqComplaint.id, }); // Find upvote in database
 
     if (upvote) {
-        return res.status(404).json({ message: 'User already voted' });
+        return res.status(409).json({ message: 'User already voted' });
     }
 
     if (complaint) {
@@ -41,7 +41,7 @@ async function downvoteComplaint(req, res){
     const downvote = await Downvote.findOne({ userID: reqUser.userId, complaintID: reqComplaint.id, }); // Find downvote in database
 
     if (downvote) {
-        return res.status(404).json({ message: 'User already voted' });
+        return res.status(409).json({ message: 'User already voted' });
     }
 
     if (complaint) {

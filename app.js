@@ -4,6 +4,7 @@ require('./app/config/database');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const requestLog = require('./app/middleware/requestLog');
 
 // Import Routes
 const authRoutes = require('./app/routes/authRoute');
@@ -12,11 +13,12 @@ const complaintRoutes = require('./app/routes/complaintRoute');
 const voteRoutes = require('./app/routes/voteRoute');
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.PORT; // Set Port Server
 
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(requestLog);
 
 // List API
 app.use('/api', cors(), authRoutes);

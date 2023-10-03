@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 const authRoutes = require('./app/routes/authRoute');
 const userRoutes = require('./app/routes/userRoute');
 const complaintRoutes = require('./app/routes/complaintRoute');
-const voteRoutes = require('./app/routes/voteRoute');
 
 const app = express();
 const port = process.env.PORT;
@@ -22,7 +21,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/api', cors(), authRoutes);
 app.use('/api', cors(), userRoutes);
 app.use('/api/complaints', cors(), complaintRoutes);
-app.use('/api', cors(), voteRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

@@ -78,7 +78,7 @@ async function getComplaints(req, res) {
                     "downvote",
                   ],
                 },
-                null,
+                "",
               ],
             },
           },

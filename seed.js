@@ -1,3 +1,4 @@
+require("dotenv").config();
 const mongoose = require("mongoose");
 const User = require("./app/models/User");
 const Complaint = require("./app/models/Complaint");
@@ -5,7 +6,7 @@ const Feedback = require("./app/models/Feedback");
 const bcrypt = require("bcrypt");
 const { faker } = require("@faker-js/faker");
 
-const url = process.env.URL_DATABASE_COMPASS || process.env.URL_DATABASE_ATLAS;
+const url = process.env.URL_DATABASE;
 
 // Connect to the database
 mongoose.connect(url, {
@@ -94,7 +95,6 @@ async function seedFeedback() {
           complaintID: complaints[randomComplaint]._id,
           upvote: isUpvote ? 1 : 0,
           downvote: isUpvote ? 0 : 1,
-          type_vote: isUpvote ? 1 : 0,
         });
         array.push(randomComplaint);
       }

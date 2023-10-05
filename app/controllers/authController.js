@@ -38,13 +38,13 @@ async function loginUser(req, res) {
   const { email, password } = req.body;
 
   try {
-    const user = await User.find({ email }, "_id password"); // Find user in database
-    const isPasswordValid = await bcrypt.compare(password, user[0].password); // Match password
+    const user = await User.findOne({ email : email }, "_id password"); // Find user in database
+    const isPasswordValid = await bcrypt.compare(password, user.password); // Match password
 
     if (!isPasswordValid) {
       res.status(404).json({ message: "Password not match" });
     } else {
-      const token = jwt.sign({ userId: user[0]._id }, accessToken, {
+      const token = jwt.sign({ userId: user._id }, accessToken, {
         expiresIn: "24h",
       }); // Generate JWT Token
 

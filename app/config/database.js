@@ -1,7 +1,13 @@
 require('dotenv').config();
 
 const mongoose = require('mongoose');
+<<<<<<< HEAD
 const url = process.env.URL_DATABASE; // Set URL MongoDB
+=======
+
+// Set URL MongoDB
+const url = process.env.URL_DATABASE_ATLAS;
+>>>>>>> task-ijul
 
 mongoose.connect(url, {
     useNewUrlParser: true,

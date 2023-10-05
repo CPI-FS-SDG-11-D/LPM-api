@@ -1,16 +1,21 @@
-require('dotenv').config();
-require('./app/config/database');
+require("dotenv").config();
+require("./app/config/database");
 
+<<<<<<< HEAD
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const requestLog = require('./app/middleware/requestLog');
+=======
+const express = require("express");
+const cors = require("cors");
+const bodyParser = require("body-parser");
+>>>>>>> origin/agi-task
 
 // Import Routes
-const authRoutes = require('./app/routes/authRoute');
-const userRoutes = require('./app/routes/userRoute');
-const complaintRoutes = require('./app/routes/complaintRoute');
-const voteRoutes = require('./app/routes/voteRoute');
+const authRoutes = require("./app/routes/authRoute");
+const userRoutes = require("./app/routes/userRoute");
+const complaintRoutes = require("./app/routes/complaintRoute");
 
 const app = express();
 const port = process.env.PORT; // Set Port Server
@@ -21,11 +26,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use(requestLog);
 
 // List API
-app.use('/api', cors(), authRoutes);
-app.use('/api', cors(), userRoutes);
-app.use('/api/complaints', cors(), complaintRoutes);
-app.use('/api', cors(), voteRoutes);
+app.use("/api", cors(), authRoutes);
+app.use("/api", cors(), userRoutes);
+app.use("/api/complaints", cors(), complaintRoutes);
 
 app.listen(port, () => {
-    console.log(`Server is running on port ${port}`)
+  console.log(`Server is running on port ${port}`);
 });

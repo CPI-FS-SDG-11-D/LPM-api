@@ -176,6 +176,25 @@ async function votes(req, res) {
 
 const addComplaint = async (req, res) => {
   try {
+    // const authHeader = req.header("Authorization");
+    // const token = authHeader && authHeader.split(" ")[1];
+    
+    // let user = "";
+    // if (token) {
+      //   const decodedToken = jwt.verify(token, accessToken);
+      //   user = decodedToken ?? "";
+      // }
+      
+    const authHeader = req.header("Authorization");
+    const token = authHeader && authHeader.split(" ")[1];
+    if (!token) {
+      return res
+        .status(401)
+        .json({
+          message: "User tidak terautentikasi, Harap login terlebih dahulu",
+        });
+    }
+
     const result = await Complaint.insertMany(req.body);
     console.log(result);
     res.status(201).redirect("/api/complaints");
@@ -186,13 +205,13 @@ const addComplaint = async (req, res) => {
 
 const detailComplaint = async (req, res) => {
   try {
-      const complaint = await Complaint.findOne({ _id: req.params.id});
-      if (complaint === null) {
-          return res.status(404).json({ message: "Complaint NOT Found." });
-      }
-      res.status(201).json(complaint);
+    const complaint = await Complaint.findOne({ _id: req.params.id });
+    if (complaint === null) {
+      return res.status(404).json({ message: "Complaint NOT Found." });
+    }
+    res.status(201).json(complaint);
   } catch (error) {
-      res.status(400).json({ message: "The Complaint NOT Found" });
+    res.status(400).json({ message: "The Complaint NOT Found" });
   }
 };
 
@@ -201,7 +220,9 @@ const searchComplaint = async (req, res) => {
     const searchTerm = req.params.title;
     const regexPattern = new RegExp(`\\b${searchTerm}\\b`, "i"); // Mencari kata tunggal
 
-    const complaints = await Complaint.find({ title: { $regex: regexPattern } });
+    const complaints = await Complaint.find({
+      title: { $regex: regexPattern },
+    });
 
     if (complaints.length === 0) {
       return res.status(404).json({ message: "Complaints NOT Found." });
@@ -215,13 +236,23 @@ const searchComplaint = async (req, res) => {
 
 const deleteComplaint = (req, res) => {
   try {
-      const deletedComplaint = Complaint.deleteOne({ _id: req.params.id }).then((result) => {
+    const deletedComplaint = Complaint.deleteOne({ _id: req.params.id }).then(
+      (result) => {
         return result;
-    });
-      res.status(200).redirect("/api/complaints");
+      }
+    );
+    res.status(200).redirect("/api/complaints");
   } catch (error) {
-      res.status(400).json({ message: error.message });
+    res.status(400).json({ message: error.message });
   }
-}
+};
 
-module.exports = { getComplaints, votes, loadComplaints, addComplaint, detailComplaint, searchComplaint, deleteComplaint };
+module.exports = {
+  getComplaints,
+  votes,
+  loadComplaints,
+  addComplaint,
+  detailComplaint,
+  searchComplaint,
+  deleteComplaint,
+};

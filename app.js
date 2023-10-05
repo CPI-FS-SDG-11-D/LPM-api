@@ -1,16 +1,10 @@
 require("dotenv").config();
 require("./app/config/database");
 
-<<<<<<< HEAD
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const requestLog = require('./app/middleware/requestLog');
-=======
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
->>>>>>> origin/agi-task
 
 // Import Routes
 const authRoutes = require("./app/routes/authRoute");

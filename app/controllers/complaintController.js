@@ -176,15 +176,6 @@ async function votes(req, res) {
 
 const addComplaint = async (req, res) => {
   try {
-    // const authHeader = req.header("Authorization");
-    // const token = authHeader && authHeader.split(" ")[1];
-    
-    // let user = "";
-    // if (token) {
-      //   const decodedToken = jwt.verify(token, accessToken);
-      //   user = decodedToken ?? "";
-      // }
-      
     const authHeader = req.header("Authorization");
     const token = authHeader && authHeader.split(" ")[1];
     if (!token) {

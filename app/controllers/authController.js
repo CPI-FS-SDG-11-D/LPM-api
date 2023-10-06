@@ -48,4 +48,29 @@ async function loginUser(req, res){
     }
 }
 
-module.exports = { registerUser, loginUser }
+async function updatePasswordUser(req, res){
+    const reqUser = req.user;
+    const { oldPassword, newPassword, confirmPassword } = req.body;
+    const hashedNewPassword = await bcrypt.hash(newPassword, 10); // Encrypt password
+    const user = await User.find({ _id: reqUser.userId }, 'password'); // Find user in database
+    const isPasswordValid = await bcrypt.compare(oldPassword, user[0].password); // Match password
+
+    if(newPassword != confirmPassword){
+        res.status(401).json({ message: 'Password not match' });
+    }
+
+    if(!isPasswordValid) {
+        res.status(401).json({ message: 'Password not match' });
+    }
+
+    try {
+        await User.findByIdAndUpdate(reqUser.userId, { password: hashedNewPassword }, { new: true, runValidators: true }); // Update password user
+
+        res.status(200).json({ message: 'Password successfully updated' });
+    } catch (err) {
+        console.error('Error login user:', err);
+        res.status(500).json({ message: 'Internal server error' });
+    }
+}
+
+module.exports = { registerUser, loginUser, updatePasswordUser }

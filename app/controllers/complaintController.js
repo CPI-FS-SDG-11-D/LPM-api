@@ -126,6 +126,15 @@ async function votes(req, res) {
     return res.status(404).json({ message: "Complaint not found" });
   }
 
+  if (complaint.keterangan == "selesai" || complaint.keterangan == "nonaktif") {
+    return res
+      .status(410)
+      .json({
+        message:
+          "Sorry, your complaint is no longer active or has been resolved.",
+      });
+  }
+
   if (upvote === "upvote" || !downvote) {
     upvote = 1;
     downvote = 0;

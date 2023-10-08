@@ -60,7 +60,6 @@ async function seedComplaint() {
       description: faker.lorem.paragraph(),
       keterangan: faker.helpers.arrayElement([
         "belum dimulai",
-        "proggress",
         "sedang berjalan",
         "tertunda",
         "selesai",

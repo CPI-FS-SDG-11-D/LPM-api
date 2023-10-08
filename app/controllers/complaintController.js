@@ -59,7 +59,7 @@ async function getComplaints(req, res) {
               downvote: "$feedbacks.downvote",
             },
           },
-          vote: {
+          vote_flag: {
             // tambahkan operator $first di sini
             $first: {
               $cond: [
@@ -78,7 +78,7 @@ async function getComplaints(req, res) {
                     "downvote",
                   ],
                 },
-                null,
+                "",
               ],
             },
           },
@@ -93,7 +93,7 @@ async function getComplaints(req, res) {
           keterangan: 1,
           totalUpvotes: 1,
           totalDownvotes: 1,
-          vote: 1,
+          vote_flag: 1,
         },
       },
     ]);

@@ -177,7 +177,8 @@ curl -X GET URL Patterns
                 "keterangan": String,
                 "username": String,
                 "upvotes": Number,
-                "downvotes": Number
+                "downvotes": Number,
+                "vote_flag" : String
             },
             // more complaints ...
         ]

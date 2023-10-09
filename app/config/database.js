@@ -1,7 +1,9 @@
 require('dotenv').config();
 
-const mongoose = require('mongoose');
-const url = process.env.URL_DATABASE; // Set URL MongoDB
+
+const mongoose = require("mongoose");
+// Set URL MongoDB
+const url = process.env.URL_DATABASE_ATLAS;
 
 mongoose.connect(url, {
     useNewUrlParser: true,

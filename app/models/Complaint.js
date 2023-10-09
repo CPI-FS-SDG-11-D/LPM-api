@@ -18,16 +18,16 @@ const complaintSchema = new Schema(
       type: String,
       required: true
     },
-    keterangan: {
+    status: {
       type: String,
       required: true
     },
-    upvote: {
+    totalUpvotes: {
       type: Number,
       required: true,
       default: 0
     },
-    downvote: {
+    totalDownvotes: {
       type: Number,
       required: true,
       default: 0

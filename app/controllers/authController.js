@@ -40,6 +40,7 @@ async function loginUser(req, res){
         } else {
             const token = jwt.sign({ userId : user[0]._id }, accessToken, {expiresIn: '24h'}); // Generate JWT Token
 
+
             res.status(200).json({ token: token });
         }
     } catch (err) {

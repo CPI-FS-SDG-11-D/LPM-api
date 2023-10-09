@@ -15,20 +15,16 @@ const feedbackSchema = new Schema({
     index: true,
     ref: 'Complaint'
   },
-  upvote: {
-    type: Number,
+  is_upvote: {
+    type: Boolean,
     required: true,
-    default: 0
+    default: false
   },
-  downvote: {
-    type: Number,
+  is_downvote: {
+    type: Boolean,
     required: true,
-    default: 0
+    default: false
   },
-},
-{
-  timestamps: true,
-}
-);
+});
 
 module.exports = mongoose.model("Feedback", feedbackSchema);

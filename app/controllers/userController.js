@@ -18,7 +18,9 @@ async function historyUser(req, res){
     const reqUser = req.user;
 
     try {
-        const complaints = await Complaint.find({ userID: reqUser.userId }).sort({ created_at: -1 });
+        const complaints = await Complaint.find({ userID: reqUser.userId })
+                        .select('userID title description status totalUpvotes totalDownvotes createdAt')
+                        .sort({ created_at: -1 });
 
         res.status(200).json({ complaints: complaints });
     } catch (err) {

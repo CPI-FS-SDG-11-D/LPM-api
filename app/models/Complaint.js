@@ -12,22 +12,23 @@ const complaintSchema = new Schema(
     },
     title: {
       type: String,
+      maxLength: 1000,
       required: true
     },
     description: {
       type: String,
       required: true
     },
-    keterangan: {
+    status: {
       type: String,
       required: true
     },
-    upvote: {
+    totalUpvotes: {
       type: Number,
       required: true,
       default: 0
     },
-    downvote: {
+    totalDownvotes: {
       type: Number,
       required: true,
       default: 0

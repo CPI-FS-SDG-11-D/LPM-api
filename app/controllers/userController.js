@@ -1,4 +1,5 @@
 const User = require('../models/User');
+// const ComplaintsByUserId = require('../services/aggregateComplaintsByUserIdService');
 const Complaint = require("../models/Complaint");
 
 async function profileUser(req, res){
@@ -18,9 +19,8 @@ async function historyUser(req, res){
     const reqUser = req.user;
 
     try {
-        const complaints = await Complaint.find({ userID: reqUser.userId })
-                        .select('userID title description status totalUpvotes totalDownvotes createdAt')
-                        .sort({ created_at: -1 });
+        // const complaints = await ComplaintsByUserId.aggregateComplaintsByUserId(reqUser.userId);
+        const complaints = await Complaint.find({ userID: reqUser.userId }, 'userID title description status totalUpvotes totalDownvotes createdAt').sort({ created_at: -1 });
 
         res.status(200).json({ complaints: complaints });
     } catch (err) {

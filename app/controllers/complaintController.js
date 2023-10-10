@@ -47,16 +47,16 @@ async function getComplaints(req, res) {
           _id: "$_id",
           title: { $first: "$title" },
           description: { $first: "$description" },
-          keterangan: { $first: "$keterangan" },
-          // hitung total upvote dan downvote
-          totalUpvotes: { $sum: "$feedbacks.upvote" },
-          totalDownvotes: { $sum: "$feedbacks.downvote" },
+          status: { $first: "$status" },
+          // hitung total is_upvote dan is_downvote
+          totalUpvotes: { $first: "$totalUpvotes" },
+          totalDownvotes: { $first: "$totalDownvotes" },
           // cek apakah user tertentu pernah memberikan feedback
           feedbacks: {
             $push: {
               userID: "$feedbacks.userID",
-              upvote: "$feedbacks.upvote",
-              downvote: "$feedbacks.downvote",
+              is_upvote: "$feedbacks.is_upvote",
+              is_downvote: "$feedbacks.is_downvote",
             },
           },
           vote_flag: {
@@ -73,7 +73,7 @@ async function getComplaints(req, res) {
                 // gunakan tanda kutip ganda di sini juga
                 {
                   $cond: [
-                    { $eq: ["$feedbacks.upvote", 1] },
+                    { $eq: ["$feedbacks.is_upvote", true] },
                     "upvote",
                     "downvote",
                   ],
@@ -90,7 +90,7 @@ async function getComplaints(req, res) {
           _id: 1,
           title: 1,
           description: 1,
-          keterangan: 1,
+          status: 1,
           totalUpvotes: 1,
           totalDownvotes: 1,
           vote_flag: 1,

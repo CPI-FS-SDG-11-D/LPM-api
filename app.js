@@ -4,7 +4,7 @@ require('./app/config/database');
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const requestLog = require('./app/middleware/requestLog');
+const morgan = require('morgan');
 
 // Import Routes
 const authRoutes = require('./app/routes/authRoute');
@@ -18,7 +18,7 @@ const port = process.env.PORT; // Set Port Server
 app.use(express.json());
 app.use(bodyParser.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(requestLog);
+app.use(morgan('combined'));
 
 // List API
 app.use('/api', cors(), authRoutes);

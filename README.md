@@ -14,10 +14,10 @@ npm run start
 ```
 
 ## How to Contribute
-- Create a new branch with the following naming convention: `<your-name>/<feature-name>`
+- Create a new branch with the following naming convention: `<your-name>/<task>`
 - Make your changes
 - Push your changes to the branch you created
-- Create a pull request to merge your branch into main
+- Merge your branch into main
 
 ## API Documentation
 ### 1. Register User
@@ -86,7 +86,42 @@ npm run start
     }
     ```
 
-### 3. Profile User
+### 3. Update Password User
+- Method: `POST`
+- URL Patterns: `/api/update-password`
+- Authetication: `true`
+- Body:
+  ```json
+  {
+    "oldPassword": String
+    "newPassword": String
+    "confirmPassword": String
+  }
+  ```
+- Usage:
+  ```
+  curl -X POST \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+  -d '{ "oldPassword": "oldPassword",
+    "newPassword": "newPassword",
+    "confirmPassword": "confirmPassword"}' \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "message": "Password successfully updated"
+    }
+    ```
+  - Errors: (401)
+    ```json
+    {
+      "message": "Password not match"
+    }
+    ```
+
+### 4. Profile User
 - Method: `GET`
 - URL Patterns: `/api/profile`
 - Authetication: `true`
@@ -116,7 +151,7 @@ npm run start
     }
     ```
 
-### 4. History Complaints User
+### 5. History Complaints User
 - Method: `GET`
 - URL Patterns: `/api/history`
 - Authetication: `true`
@@ -137,8 +172,9 @@ npm run start
                 "userID": ObjectId,
                 "title": String,
                 "description": String,
-                "upvote": Number,
-                "downvote": Number,
+                "status": String,
+                "totalUpvotes": Number,
+                "totalDownvotes": Number,
                 "createdAt": Date
             },
         ]
@@ -151,7 +187,7 @@ npm run start
     }
     ```
 
-### 5. Get All Complaints
+### 6. Get All Complaints
 
 This endpoint allows you to get a list of all the complaints that have been submitted by the users. You can use the GET method to request this endpoint without any authentication or body parameters.
 
@@ -191,7 +227,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 5. Upvote Complaint
+### 7. Upvote Complaint
 - Method: `PUT`
 - URL Patterns: `/api/upvote/:complaintID`
 - Authetication: `true`
@@ -206,7 +242,7 @@ curl -X GET URL Patterns
   - Success: (200)
     ```json
     {
-      "upvote": Number
+      "totalUpvotes": Number
     }
     ```
   - Errors: (409)
@@ -216,7 +252,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 5. Downvote Complaint
+### 8. Downvote Complaint
 - Method: `PUT`
 - URL Patterns: `/api/downvote/:complaintID`
 - Authetication: `true`
@@ -231,7 +267,7 @@ curl -X GET URL Patterns
   - Success: (200)
     ```json
     {
-      "downvote": Number
+      "totalDownvotes": Number
     }
     ```
   - Errors: (409)

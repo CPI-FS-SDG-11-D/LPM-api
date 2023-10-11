@@ -54,17 +54,20 @@ async function seedUser() {
 let complaints = [];
 async function seedComplaint() {
   for (let i = 0; i < 5; i++) {
+    const usersUpvote = faker.number.int({ min: 0, max: users.length - 1 });
     complaints.push({
       userID: users[i]._id,
       title: faker.lorem.sentence(),
       description: faker.lorem.paragraph(),
-      keterangan: faker.helpers.arrayElement([
+      status: faker.helpers.arrayElement([
         "belum dimulai",
         "sedang berjalan",
         "tertunda",
         "selesai",
         "nonaktif",
       ]),
+      totalUpvotes: usersUpvote,
+      totalDownvotes: users.length - usersUpvote,
     });
   }
 
@@ -72,14 +75,18 @@ async function seedComplaint() {
   Complaint.insertMany(complaints)
     .then(() => {
       console.log("Complaints seeded");
+
       getComplaints();
     })
     .catch((err) => {
       throw err;
     });
   async function getComplaints() {
-    complaints = await Complaint.find().select("_id");
+    complaints = await Complaint.find().select(
+      "_id totalUpvotes totalDownvotes"
+    );
 
+    console.log({ complaints });
     seedFeedback();
   }
 }
@@ -87,23 +94,16 @@ async function seedComplaint() {
 let feedbacks = [];
 async function seedFeedback() {
   for (let i = 0; i < users.length; i++) {
-    const manyVote = faker.number.int({ min: 0, max: complaints.length - 1 });
-    const array = [];
-    for (let j = 0; j < manyVote; j++) {
-      const randomComplaint = faker.number.int({
-        min: 0,
-        max: complaints.length - 1,
+    for (let j = 0; j < complaints.length; j++) {
+      const isUpvote =
+        faker.number.int({ min: 0, max: 1 }) === 1 ? true : false;
+
+      feedbacks.push({
+        userID: users[i]._id,
+        complaintID: complaints[j]._id,
+        is_upvote: isUpvote,
+        is_downvote: !isUpvote,
       });
-      const isUpvote = faker.number.int({ min: 0, max: 1 });
-      if (!array.includes(randomComplaint)) {
-        feedbacks.push({
-          userID: users[i]._id,
-          complaintID: complaints[randomComplaint]._id,
-          upvote: isUpvote ? 1 : 0,
-          downvote: isUpvote ? 0 : 1,
-        });
-        array.push(randomComplaint);
-      }
     }
   }
 

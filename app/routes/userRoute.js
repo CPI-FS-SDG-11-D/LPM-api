@@ -13,6 +13,7 @@ if route should be authenticate but still request can be pass
 add passAuthentication function after url before controller
 example: router.get('/profile', **passAuthentication**, userController.profileUser)
 */
+
 router.get('/profile', authentication, userController.profileUser)
 router.get('/history', authentication, userController.historyUser)
   

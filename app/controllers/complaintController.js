@@ -225,9 +225,9 @@ const detailComplaint = async (req, res) => {
 };
 
 const searchComplaint = async (req, res) => {
+  const searchTerm = req.query.title;
+  console.log(searchTerm);
   try {
-    const searchTerm = req.query.title;
-    console.log(searchTerm);
     const regexPattern = new RegExp(`\\b${searchTerm}\\b`, "i"); // Mencari kata tunggal
 
     const complaints = await Complaint.find({
@@ -240,7 +240,8 @@ const searchComplaint = async (req, res) => {
 
     res.status(200).json(complaints);
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    console.error(error);
+    res.status(500).json({ message: "Babi kau" });
   }
 };
 

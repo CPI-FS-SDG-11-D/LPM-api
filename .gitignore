@@ -2,6 +2,6 @@ node_modules
 .gitignore
 .env
 config
-seedingController.js
-dummyComplaint.json
-dummyFeedback.json
+app/controllers/seedingController.js
+app/controllers/dummyComplaint.json
+app/controllers/dummyFeedback.json

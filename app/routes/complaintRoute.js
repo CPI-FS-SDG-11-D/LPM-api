@@ -10,8 +10,8 @@ router.get("/", complaintController.getComplaints);
 // router.get("/complaints", complaintController.loadComplaints);
 router.post("/",authentication, complaintController.addComplaint);
 router.post("/votes",authentication, complaintController.votes);
-router.get("/:id",passAuthentication, complaintController.detailComplaint);
 router.get("/search", complaintController.searchComplaint);
+router.get("/:id",passAuthentication, complaintController.detailComplaint);
 router.delete("/:id",authentication, complaintController.deleteComplaint);
 
 module.exports = router;

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Complaint = require("../models/Complaint");
 
 const jwt = require("jsonwebtoken");
@@ -135,12 +136,10 @@ async function votes(req, res) {
   }
 
   if (complaint.keterangan == "selesai" || complaint.keterangan == "nonaktif") {
-    return res
-      .status(410)
-      .json({
-        message:
-          "Sorry, your complaint is no longer active or has been resolved.",
-      });
+    return res.status(410).json({
+      message:
+        "Sorry, your complaint is no longer active or has been resolved.",
+    });
   }
 
   if (upvote === "upvote" || !downvote) {
@@ -185,15 +184,23 @@ async function votes(req, res) {
 
 const addComplaint = async (req, res) => {
   if (!req.user) {
-    return res
-      .status(401)
-      .json({
-        message: "User tidak terautentikasi, Harap login terlebih dahulu",
-      });
+    return res.status(401).json({
+      message: "User tidak terautentikasi, Harap login terlebih dahulu",
+    });
   }
 
   try {
-    const result = await Complaint.insertMany(req.body);
+    const userID = req.user ? req.user.userId : null;
+    const complaintData = {
+      userID: userID,
+      title: req.body.title,
+      description: req.body.description,
+      status: req.body.status,
+      totalUpvotes: 0,
+      totalDownvotes: 0,
+    };
+
+    const result = await Complaint.insertMany(complaintData);
     console.log(result);
     res.status(201).redirect("/api/complaints");
   } catch (error) {
@@ -202,23 +209,25 @@ const addComplaint = async (req, res) => {
 };
 
 const detailComplaint = async (req, res) => {
-  const reqUser = req.user;
-  const idUser = reqUser.userId;
-  
+  const authHeader = req.header("Authorization");
   try {
     const complaint = await Complaint.findOne({ _id: req.params.id });
     if (complaint === null) {
       return res.status(404).json({ message: "Complaint NOT Found." });
     }
-    res.status(201).json(complaint);
+
+    const isUserLoggedIn = authHeader ? req.user.userId : "Unauthorized";
+
+    res.status(200).json({ complaint, isUserLoggedIn });
   } catch (error) {
-    res.status(400).json({ message: "The Complaint NOT Found" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 const searchComplaint = async (req, res) => {
   try {
-    const searchTerm = req.params.title;
+    const searchTerm = req.query.title;
+    console.log(searchTerm);
     const regexPattern = new RegExp(`\\b${searchTerm}\\b`, "i"); // Mencari kata tunggal
 
     const complaints = await Complaint.find({

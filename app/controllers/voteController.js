@@ -1,6 +1,7 @@
 const Complaint = require("../models/Complaint");
 const Feedback = require("../models/Feedback");
 
+
 async function upvoteComplaint(req, res){
     const reqUser = req.user;
     const reqComplaint = req.params;
@@ -59,4 +60,4 @@ async function downvoteComplaint(req, res){
     }
 }
 
-module.exports = { upvoteComplaint, downvoteComplaint }
+module.exports = { upvoteComplaint, downvoteComplaint}

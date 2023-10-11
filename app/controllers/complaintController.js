@@ -184,15 +184,15 @@ async function votes(req, res) {
 }
 
 const addComplaint = async (req, res) => {
-  try {
-    if (!req.user) {
-      return res
-        .status(401)
-        .json({
-          message: "User tidak terautentikasi, Harap login terlebih dahulu",
-        });
-    }
+  if (!req.user) {
+    return res
+      .status(401)
+      .json({
+        message: "User tidak terautentikasi, Harap login terlebih dahulu",
+      });
+  }
 
+  try {
     const result = await Complaint.insertMany(req.body);
     console.log(result);
     res.status(201).redirect("/api/complaints");
@@ -202,6 +202,9 @@ const addComplaint = async (req, res) => {
 };
 
 const detailComplaint = async (req, res) => {
+  const reqUser = req.user;
+  const idUser = reqUser.userId;
+  
   try {
     const complaint = await Complaint.findOne({ _id: req.params.id });
     if (complaint === null) {

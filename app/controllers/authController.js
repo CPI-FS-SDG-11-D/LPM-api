@@ -7,7 +7,6 @@ const accessToken = process.env.SECRET_TOKEN;
 
 async function registerUser(req, res){
     const { username, email, password } = req.body;
-    
     const hashedPassword = await bcrypt.hash(password, 10); // Encrypt password
     const existingUser = await User.findOne({ email }); // Find user email in database
 

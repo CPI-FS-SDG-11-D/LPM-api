@@ -1,19 +1,19 @@
 const Complaint = require('../models/Complaint');
 
-async function aggregateComplaintsByUserId(userId) {
+async function aggregateComplaintsByUserId(username) {
     try {
         const complaints = await Complaint.aggregate([
-            {
-                $match: {
-                    userID: userId
-                }
-            },
             {
                 $lookup: {
                     from: "users",
                     localField: "userID",
                     foreignField: "_id",
                     as: "user"
+                }
+            },
+            {
+                $match: {
+                    "user.username": username
                 }
             },
             {

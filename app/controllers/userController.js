@@ -1,6 +1,6 @@
 const User = require('../models/User');
-// const ComplaintsByUserId = require('../services/aggregateComplaintsByUserIdService');
-const Complaint = require("../models/Complaint");
+const ComplaintsByUserId = require('../services/aggregateComplaintsByUserIdService');
+// const Complaint = require("../models/Complaint");
 
 async function profileUser(req, res){
     const reqUser = req.user;
@@ -17,10 +17,11 @@ async function profileUser(req, res){
 
 async function historyUser(req, res){
     const reqUser = req.user;
+    const user = await User.find({ _id: reqUser.userId }, 'username'); // Get username from user
 
     try {
-        // const complaints = await ComplaintsByUserId.aggregateComplaintsByUserId(reqUser.userId);
-        const complaints = await Complaint.find({ userID: reqUser.userId }, 'userID title description status totalUpvotes totalDownvotes createdAt').sort({ created_at: -1 });
+        const complaints = await ComplaintsByUserId.aggregateComplaintsByUserId(user[0].username);
+        // const complaints = await Complaint.find({ userID: reqUser.userId }, 'userID title description status totalUpvotes totalDownvotes createdAt').sort({ created_at: -1 });
 
         res.status(200).json({ complaints: complaints });
     } catch (err) {

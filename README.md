@@ -175,7 +175,8 @@ npm run start
                 "status": String,
                 "totalUpvotes": Number,
                 "totalDownvotes": Number,
-                "createdAt": Date
+                "createdAt": Date,
+                "username": String,
             },
         ]
     }

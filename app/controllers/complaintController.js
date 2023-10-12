@@ -6,14 +6,7 @@ const accessToken = process.env.SECRET_TOKEN;
 
 async function getComplaints(req, res) {
   try {
-    const authHeader = req.header("Authorization");
-    const token = authHeader && authHeader.split(" ")[1];
-
-    let user = "";
-    if (token) {
-      const decodedToken = jwt.verify(token, accessToken);
-      user = decodedToken ?? "";
-    }
+    let user = req.user ?? "";
 
     // gunakan aggregate pada model Complaint
     const complaints = await Complaint.aggregate([

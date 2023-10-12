@@ -21,15 +21,14 @@ async function aggregateComplaintsByUserId(username) {
             },
             {
                 $project: {
-                    _id: 0,
-                    userID: 1,
-                    title: 1,
-                    description: 1,
-                    status: 1,
-                    totalUpvotes: 1,
-                    totalDownvotes: 1,
-                    createdAt: 1,
+                    _id: "$_id",
                     username: "$user.username",
+                    title: "$title",
+                    description: "$description",
+                    status: "$status",
+                    upvote: "$totalUpvotes",
+                    downvote: "$totalDownvotes",
+                    createdAt: "$createdAt",
                 }
             },
             {

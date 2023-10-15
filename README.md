@@ -169,13 +169,14 @@ npm run start
         "complaints": [
             {
                 "_id": ObjectId,
-                "username": String,
+                "userID": ObjectId,
                 "title": String,
                 "description": String,
                 "status": String,
-                "upvote": Number,
-                "downvote": Number,
+                "totalUpvotes": Number,
+                "totalDownvotes": Number,
                 "createdAt": Date,
+                "username": String,
             },
         ]
     }

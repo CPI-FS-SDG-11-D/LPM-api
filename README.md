@@ -289,7 +289,12 @@ curl -X GET URL Patterns
   "description": String
   }
   ```
-- Usage: `none`
+- Usage:
+  ```
+  curl -X POST \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns: /api/complaints/
+  ```
 - Response:
   - Success: (201)
     ```json
@@ -407,7 +412,7 @@ curl -X GET URL Patterns
   ```
 - Usage:
   ```
-  curl -X GET \
+  curl -X PUT \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
   URL_Patterns: /api/complaints/:id/update-status
   ```

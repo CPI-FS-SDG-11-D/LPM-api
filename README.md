@@ -276,3 +276,149 @@ curl -X GET URL Patterns
       "message": "User already voted"
     }
     ```
+
+### 9. Add Complaint
+- Method: `POST`
+- URL Patterns: `/api/complaints`
+- Authetication: `true`
+- Params: `none`
+- Body: 
+  ```json
+  {
+  "title": String,
+  "description": String
+  }
+  ```
+- Usage: `none`
+- Response:
+  - Success: (201)
+    ```json
+    {
+    "message": "Aduan berhasil ditambahkan", 
+    "complaint":
+        {
+          "_id": ObjectId,
+          "userID": ObjectId,
+          "title": String,
+          "description": String,
+          "status": String,
+          "totalUpvotes": Number,
+          "totalDownvotes": Number,
+          "createdAt": Timestamps,
+          "updatedAt": Timestamps
+        }
+    }
+    ```
+  - Errors: (400)
+    ```json
+    {
+      "message": error.message
+    }
+    ```
+
+### 10. Search Complaint
+- Method: `GET`
+- URL Patterns: `/api/complaints/search`
+- Authetication: `false`
+- Params: `title`
+- Body: `none`
+- Usage: `none`
+- Response:
+  - Success: (200)
+    ```json
+    {
+    "username": String,
+    "complaints": [
+        {
+            "complaint": {
+                "_id": ObjectId,
+                "userID": ObjectId,
+                "title": String,
+                "description": String,
+                "status": String,
+                "totalUpvotes": Number,
+                "totalDownvotes": Number,
+                "createdAt": Timestamps,
+                "updatedAt": Timestamps
+            },
+            "feedback": {
+                "is_upvote": Boolean,
+                "is_downvote": Boolean
+            }
+        }
+      ]
+    }
+    ```
+  - Errors: (404)
+    ```json
+    {
+      "message": "Complaints NOT Found."
+    }
+    ```
+
+### 11. Detail Complaint
+- Method: `GET`
+- URL Patterns: `/api/complaints/:id`
+- Authetication: `false`
+- Params: `id`
+- Body: `none`
+- Usage: `none`
+- Response:
+  - Success: (200)
+    ```json
+    {
+    "complaint": 
+        {
+          "_id": ObjectId,
+          "userID": ObjectId,
+          "title": String,
+          "description": String,
+          "status": String,
+          "totalUpvotes": Number,
+          "totalDownvotes": Number,
+          "createdAt": Timestamps,
+          "updatedAt": Timestamps
+        },
+        "isUserLoggedIn": Boolean,
+        "userData": {
+          "username": String,
+          "is_upvote": Boolean,
+          "is_downvote": Boolean,
+        }
+    }
+    ```
+  - Errors: (404)
+    ```json
+    {
+      "message": "Complaints NOT Found."
+    }
+    ```
+
+### 12. Update Complaint Status
+- Method: `PUT`
+- URL Patterns: `/api/complaints/:id/update-status`
+- Authetication: `true`
+- Params: `id`
+- Body: 
+  ```json
+  {
+  "status": String
+  }
+  ```
+- Usage:
+  ```
+  curl -X GET \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns: /api/complaints/:id/update-status
+  ```
+- Response:
+  - Success: (200)
+    ```bash
+    redirectUrl: `/api/complaints/:id`
+    ```
+  - Errors: (404)
+    ```json
+    {
+      "message": error.message
+    }
+    ```

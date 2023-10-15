@@ -1,19 +1,14 @@
 const mongoose = require("mongoose");
 const Complaint = require("../models/Complaint");
+const User = require('../models/User');
+const Feedback = require('../models/Feedback');
 
 const jwt = require("jsonwebtoken");
 const accessToken = process.env.SECRET_TOKEN;
 
 async function getComplaints(req, res) {
   try {
-    const authHeader = req.header("Authorization");
-    const token = authHeader && authHeader.split(" ")[1];
-
-    let user = "";
-    if (token) {
-      const decodedToken = jwt.verify(token, accessToken);
-      user = decodedToken ?? "";
-    }
+    let user = req.user ?? "";
 
     // gunakan aggregate pada model Complaint
     const complaints = await Complaint.aggregate([
@@ -189,20 +184,27 @@ const addComplaint = async (req, res) => {
     });
   }
 
+  const userID = req.user.userId;
+  const { title, description } = req.body;
+
+  if (!title || !description) {
+    return res.status(400).json({ message: "Harap isi semua bidang yang diperlukan (title dan description)" });
+  }
+
   try {
-    const userID = req.user ? req.user.userId : null;
     const complaintData = {
-      userID: userID,
-      title: req.body.title,
-      description: req.body.description,
-      status: req.body.status,
+      userID,
+      title,
+      description,
+      status: "pending",
       totalUpvotes: 0,
       totalDownvotes: 0,
     };
 
-    const result = await Complaint.insertMany(complaintData);
-    console.log(result);
-    res.status(201).redirect("/api/complaints");
+    const complaint = new Complaint(complaintData);
+    await complaint.save();
+
+    res.status(201).json({ message: "Keluhan berhasil ditambahkan", complaint });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -216,19 +218,60 @@ const detailComplaint = async (req, res) => {
       return res.status(404).json({ message: "Complaint NOT Found." });
     }
 
-    const isUserLoggedIn = authHeader ? req.user.userId : "Unauthorized";
+    const responseData = { complaint };
 
-    res.status(200).json({ complaint, isUserLoggedIn });
+    if(authHeader){
+      const isUserLoggedIn = authHeader ? "True" : "False";
+      const user = await User.findOne({ _id: req.user.userId });
+      const feedback = await Feedback.findOne({
+        complaintID: req.params.id,
+        userID: req.user.userId,
+      });
+
+      const userData = {
+        username: user.username,
+        is_upvote: feedback ? feedback.is_upvote : false,
+        is_downvote: feedback ? feedback.is_downvote : false,
+      };
+
+      responseData.isUserLoggedIn = isUserLoggedIn;
+      responseData.userData = userData;
+    }
+
+    res.status(200).json(responseData);
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
+const updateComplaint = async (req, res) => {
+  try {
+    const complaint = await Complaint.findOne({ _id: req.params.id });
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    if (complaint.userID.toString() !== req.user.userId) {
+      return res.status(403).json({ message: "You are not the owner of this complaint" });
+    }
+
+    complaint.status = req.body.status;
+    await complaint.save();
+
+    res.status(200).redirect(`/api/complaints/${req.params.id}`);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
 const searchComplaint = async (req, res) => {
+  const authHeader = req.header("Authorization");
+  const responseData = { username: null, complaints: [] };
+
   try {
     const searchTerm = req.query.title;
-    console.log(searchTerm);
-    const regexPattern = new RegExp(`\\b${searchTerm}\\b`, "i"); // Mencari kata tunggal
+    const regexPattern = new RegExp(`\\b${searchTerm}\\b`, "i");
 
     const complaints = await Complaint.find({
       title: { $regex: regexPattern },
@@ -238,7 +281,28 @@ const searchComplaint = async (req, res) => {
       return res.status(404).json({ message: "Complaints NOT Found." });
     }
 
-    res.status(200).json(complaints);
+    if (authHeader) {
+      const user = await User.findOne({ _id: req.user.userId });
+      responseData.username = user.username;
+
+      for (const complaint of complaints) {
+        const feedback = await Feedback.findOne({
+          complaintID: complaint._id,
+          userID: req.user.userId,
+        });
+
+        complaint.feedback = {
+          is_upvote: feedback ? feedback.is_upvote : false,
+          is_downvote: feedback ? feedback.is_downvote : false,
+        };
+
+        responseData.complaints.push({ complaint, feedback: complaint.feedback });
+      }
+    } else {
+      responseData.complaints = complaints;
+    }
+
+    res.status(200).json(responseData);
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -263,6 +327,7 @@ module.exports = {
   loadComplaints,
   addComplaint,
   detailComplaint,
+  updateComplaint,
   searchComplaint,
   deleteComplaint,
 };

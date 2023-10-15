@@ -1,5 +1,7 @@
+const mongoose = require("mongoose");
 const Complaint = require("../models/Complaint");
-const Feedback = require("../models/Feedback");
+const User = require('../models/User');
+const Feedback = require('../models/Feedback');
 
 const jwt = require("jsonwebtoken");
 const accessToken = process.env.SECRET_TOKEN;
@@ -101,6 +103,16 @@ async function getComplaints(req, res) {
   }
 }
 
+const loadComplaints = async (_, res) => {
+  try {
+    const allComplaints = await Complaint.find();
+    
+    res.status(200).json(allComplaints);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 async function votes(req, res) {
   const reqUser = req.user;
   const { id } = req.body;
@@ -120,12 +132,10 @@ async function votes(req, res) {
   }
 
   if (complaint.keterangan == "selesai" || complaint.keterangan == "nonaktif") {
-    return res
-      .status(410)
-      .json({
-        message:
-          "Sorry, your complaint is no longer active or has been resolved.",
-      });
+    return res.status(410).json({
+      message:
+        "Sorry, your complaint is no longer active or has been resolved.",
+    });
   }
 
   if (upvote === "upvote" || !downvote) {
@@ -168,22 +178,148 @@ async function votes(req, res) {
   res.status(404).json({ message: "Feedback not found" });
 }
 
-const addComplaint = (input) => {
-  Complaint.insertMany(input);
+const addComplaint = async (req, res) => {
+  if (!req.user) {
+    return res.status(401).json({
+      message: "User tidak terautentikasi, Harap login terlebih dahulu",
+    });
+  }
+
+  const userID = req.user.userId;
+  const { title, description } = req.body;
+
+  if (!title || !description) {
+    return res.status(400).json({ message: "Harap isi semua bidang yang diperlukan (title dan description)" });
+  }
+
+  try {
+    const complaintData = {
+      userID,
+      title,
+      description,
+      status: "pending",
+      totalUpvotes: 0,
+      totalDownvotes: 0,
+    };
+
+    const complaint = new Complaint(complaintData);
+    await complaint.save();
+
+    res.status(201).json({ message: "Keluhan berhasil ditambahkan", complaint });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
-const loadComplaints = () => {
-  return Complaint.find();
+const detailComplaint = async (req, res) => {
+  const authHeader = req.header("Authorization");
+  try {
+    const complaint = await Complaint.findOne({ _id: req.params.id });
+    if (complaint === null) {
+      return res.status(404).json({ message: "Complaint NOT Found." });
+    }
+
+    const responseData = { complaint };
+
+    if(authHeader){
+      const isUserLoggedIn = authHeader ? "True" : "False";
+      const user = await User.findOne({ _id: req.user.userId });
+      const feedback = await Feedback.findOne({
+        complaintID: req.params.id,
+        userID: req.user.userId,
+      });
+
+      const userData = {
+        username: user.username,
+        is_upvote: feedback ? feedback.is_upvote : false,
+        is_downvote: feedback ? feedback.is_downvote : false,
+      };
+
+      responseData.isUserLoggedIn = isUserLoggedIn;
+      responseData.userData = userData;
+    }
+
+    res.status(200).json(responseData);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 
-const findComplaint = (id) => {
-  return Complaint.findOne({ _id: id });
+const updateComplaint = async (req, res) => {
+  try {
+    const complaint = await Complaint.findOne({ _id: req.params.id });
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    if (complaint.userID.toString() !== req.user.userId) {
+      return res.status(403).json({ message: "You are not the owner of this complaint" });
+    }
+
+    complaint.status = req.body.status;
+    await complaint.save();
+
+    res.status(200).redirect(`/api/complaints/${req.params.id}`);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+const searchComplaint = async (req, res) => {
+  const authHeader = req.header("Authorization");
+  const responseData = { username: null, complaints: [] };
+
+  try {
+    const searchTerm = req.query.title;
+    const regexPattern = new RegExp(`\\b${searchTerm}\\b`, "i");
+
+    const complaints = await Complaint.find({
+      title: { $regex: regexPattern },
+    });
+
+    if (complaints.length === 0) {
+      return res.status(404).json({ message: "Complaints NOT Found." });
+    }
+
+    if (authHeader) {
+      const user = await User.findOne({ _id: req.user.userId });
+      responseData.username = user.username;
+
+      for (const complaint of complaints) {
+        const feedback = await Feedback.findOne({
+          complaintID: complaint._id,
+          userID: req.user.userId,
+        });
+
+        complaint.feedback = {
+          is_upvote: feedback ? feedback.is_upvote : false,
+          is_downvote: feedback ? feedback.is_downvote : false,
+        };
+
+        responseData.complaints.push({ complaint, feedback: complaint.feedback });
+      }
+    } else {
+      responseData.complaints = complaints;
+    }
+
+    res.status(200).json(responseData);
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 
-const deleteComplaint = (id) => {
-  Complaint.deleteOne({ _id: id }).then((result) => {
-    return result;
-  });
+const deleteComplaint = (req, res) => {
+  try {
+    const deletedComplaint = Complaint.deleteOne({ _id: req.params.id }).then(
+      (result) => {
+        return result;
+      }
+    );
+    res.status(200).redirect("/api/complaints");
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 module.exports = {
@@ -191,6 +327,8 @@ module.exports = {
   votes,
   loadComplaints,
   addComplaint,
-  findComplaint,
+  detailComplaint,
+  updateComplaint,
+  searchComplaint,
   deleteComplaint,
 };

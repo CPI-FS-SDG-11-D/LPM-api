@@ -106,6 +106,7 @@ async function getComplaints(req, res) {
 const loadComplaints = async (_, res) => {
   try {
     const allComplaints = await Complaint.find();
+    
     res.status(200).json(allComplaints);
   } catch (error) {
     res.status(400).json({ message: error.message });

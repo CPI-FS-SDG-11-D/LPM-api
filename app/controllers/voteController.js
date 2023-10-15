@@ -1,7 +1,6 @@
 const Complaint = require("../models/Complaint");
 const Feedback = require("../models/Feedback");
 
-
 async function upvoteComplaint(req, res){
     const reqUser = req.user;
     const reqComplaint = req.params;

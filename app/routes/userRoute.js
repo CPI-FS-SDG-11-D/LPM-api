@@ -1,8 +1,10 @@
 const express = require("express");
+const multer = require('multer'); 
 const userController = require('../controllers/userController');
 const authentication = require('../middleware/authentication');
 
 const router = express.Router();
+const upload = multer({ dest: '/src/images/profile' });
 
 /*
 if route should be authenticate
@@ -15,6 +17,7 @@ example: router.get('/profile', **passAuthentication**, userController.profileUs
 */
 
 router.get('/profile', authentication, userController.profileUser)
+router.post('/upload-profile', upload.single('photo'), authentication, userController.photoUser)
 router.get('/history', authentication, userController.historyUser)
   
 module.exports = router;

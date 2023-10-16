@@ -151,9 +151,9 @@ npm run start
     }
     ```
     
-### 5. Upload Profile Picture User
+### 5. Upload Profile Image User
 - Method: `POST`
-- URL Patterns: `/api/upload-profile`
+- URL Patterns: `/api/upload-user`
 - Authetication: `true`
 - Headers:
   ``` json
@@ -164,7 +164,7 @@ npm run start
 - Body:
     ``` json
     {
-      "photo": image
+      "image": image
     }
   ```
 - Usage:
@@ -172,14 +172,14 @@ npm run start
   curl -X GET \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
   -H "Content-Type: multipart/form-data" \
-  -d '{ "photo": photo }' \
+  -d '{ "image": image }' \
   URL_Patterns
   ```
 - Response:
   - Success: (200)
     ```json
     {
-      "urlPhoto": String
+      "urlUser": String
     }
     ```
   - Errors: (500)
@@ -308,7 +308,45 @@ curl -X GET URL Patterns
     }
     ```
 
-### 9. Search Complaint
+### 9. Upload Image Complaint
+- Method: `POST`
+- URL Patterns: `/api/upload-complaint`
+- Authetication: `true`
+- Headers:
+  ``` json
+    {
+      "Content-Type": multipart/form-data
+    }
+  ```
+- Body:
+    ``` json
+    {
+      "image": image
+    }
+  ```
+- Usage:
+  ```
+  curl -X GET \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+  -H "Content-Type: multipart/form-data" \
+  -d '{ "image": image }' \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "urlComplaint": String
+    }
+    ```
+  - Errors: (500)
+    ```json
+    {
+      "message": "Error uploading image"
+    }
+    ```
+
+### 10. Search Complaint
 - Method: `GET`
 - URL Patterns: `/api/complaints/search`
 - Authetication: `false`
@@ -348,7 +386,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 10. Detail Complaint
+### 11. Detail Complaint
 - Method: `GET`
 - URL Patterns: `/api/complaints/:id`
 - Authetication: `false`
@@ -386,7 +424,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 11. Update Complaint Status
+### 12. Update Complaint Status
 - Method: `PUT`
 - URL Patterns: `/api/complaints/:id/update-status`
 - Authetication: `true`
@@ -415,7 +453,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 12. Upvote Complaint
+### 13. Upvote Complaint
 - Method: `PUT`
 - URL Patterns: `/api/upvote/:complaintID`
 - Authetication: `true`
@@ -440,7 +478,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 13. Downvote Complaint
+### 14. Downvote Complaint
 - Method: `PUT`
 - URL Patterns: `/api/downvote/:complaintID`
 - Authetication: `true`

@@ -150,8 +150,46 @@ npm run start
       "message": "User not found"
     }
     ```
+    
+### 5. Upload Profile Picture User
+- Method: `POST`
+- URL Patterns: `/api/upload-profile`
+- Authetication: `true`
+- Headers:
+  ``` json
+    {
+      "Content-Type": multipart/form-data
+    }
+  ```
+- Body:
+    ``` json
+    {
+      "photo": image
+    }
+  ```
+- Usage:
+  ```
+  curl -X GET \
+  -H "Authorization: Bearer <ACCESS_TOKEN>"
+  -H "Content-Type: multipart/form-data" \
+  -d '{ "photo": photo }' \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "urlPhoto": String
+    }
+    ```
+  - Errors: (500)
+    ```json
+    {
+      "message": "Error uploading image"
+    }
+    ```
 
-### 5. History Complaints User
+### 6. History Complaints User
 - Method: `GET`
 - URL Patterns: `/api/history`
 - Authetication: `true`
@@ -185,7 +223,7 @@ npm run start
     }
     ```
 
-### 6. Get All Complaints
+### 7. Get All Complaints
 
 This endpoint allows you to get a list of all the complaints that have been submitted by the users. You can use the GET method to request this endpoint without any authentication or body parameters.
 
@@ -226,57 +264,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 7. Upvote Complaint
-- Method: `PUT`
-- URL Patterns: `/api/upvote/:complaintID`
-- Authetication: `true`
-- Body: `none`
-- Usage:
-  ```
-  curl -X PUT \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  URL_Patterns
-  ```
-- Response:
-  - Success: (200)
-    ```json
-    {
-      "totalUpvotes": Number
-    }
-    ```
-  - Errors: (409)
-    ```json
-    {
-      "message": "User already voted"
-    }
-    ```
-
-### 8. Downvote Complaint
-- Method: `PUT`
-- URL Patterns: `/api/downvote/:complaintID`
-- Authetication: `true`
-- Body: `none`
-- Usage:
-  ```
-  curl -X PUT \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  URL_Patterns
-  ```
-- Response:
-  - Success: (200)
-    ```json
-    {
-      "totalDownvotes": Number
-    }
-    ```
-  - Errors: (409)
-    ```json
-    {
-      "message": "User already voted"
-    }
-    ```
-
-### 9. Add Complaint
+### 8. Add Complaint
 - Method: `POST`
 - URL Patterns: `/api/complaints`
 - Authetication: `true`
@@ -320,7 +308,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 10. Search Complaint
+### 9. Search Complaint
 - Method: `GET`
 - URL Patterns: `/api/complaints/search`
 - Authetication: `false`
@@ -360,7 +348,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 11. Detail Complaint
+### 10. Detail Complaint
 - Method: `GET`
 - URL Patterns: `/api/complaints/:id`
 - Authetication: `false`
@@ -398,7 +386,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 12. Update Complaint Status
+### 11. Update Complaint Status
 - Method: `PUT`
 - URL Patterns: `/api/complaints/:id/update-status`
 - Authetication: `true`
@@ -424,5 +412,55 @@ curl -X GET URL Patterns
     ```json
     {
       "message": error.message
+    }
+    ```
+
+### 12. Upvote Complaint
+- Method: `PUT`
+- URL Patterns: `/api/upvote/:complaintID`
+- Authetication: `true`
+- Body: `none`
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "totalUpvotes": Number
+    }
+    ```
+  - Errors: (409)
+    ```json
+    {
+      "message": "User already voted"
+    }
+    ```
+
+### 13. Downvote Complaint
+- Method: `PUT`
+- URL Patterns: `/api/downvote/:complaintID`
+- Authetication: `true`
+- Body: `none`
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "totalDownvotes": Number
+    }
+    ```
+  - Errors: (409)
+    ```json
+    {
+      "message": "User already voted"
     }
     ```

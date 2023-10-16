@@ -206,13 +206,14 @@ curl -X GET URL Patterns
         "complaints": [
             {
                 "_id": ObjectId,
+                "username": String,
                 "title": String,
                 "description": String,
-                "keterangan": String,
-                "username": String,
-                "upvotes": Number,
-                "downvotes": Number,
-                "vote_flag" : String
+                "status": String,
+                "totalUpvotes": Number,
+                "totalDownvotes": Number,
+                "vote_flag" : String,
+                "createdAt": Timestamps,
             },
             // more complaints ...
         ]

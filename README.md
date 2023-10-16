@@ -140,7 +140,8 @@ npm run start
         {
           "_id": ObjectId,
           "email": String,
-          "username": String
+          "username": String,
+          "urlUser": String,
         }
     }
     ```

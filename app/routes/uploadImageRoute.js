@@ -1,8 +1,11 @@
 const express = require("express");
-const userController = require('../controllers/userController');
+const multer = require('multer'); 
+const uploadImageController = require('../controllers/uploadImageController');
 const authentication = require('../middleware/authentication');
 
 const router = express.Router();
+const uploadUser = multer({ dest: '/src/images/profile' });
+const uploadComplaint = multer({ dest: '/src/images/complaint' });
 
 /*
 if route should be authenticate
@@ -14,7 +17,7 @@ add passAuthentication function after url before controller
 example: router.get('/profile', **passAuthentication**, userController.profileUser)
 */
 
-router.get('/profile', authentication, userController.profileUser)
-router.get('/history', authentication, userController.historyUser)
+router.post('/upload-user', uploadUser.single('image'), authentication, uploadImageController.imageUser)
+router.post('/upload-complaint', uploadComplaint.single('image'), authentication, uploadImageController.imageComplaint)
   
 module.exports = router;

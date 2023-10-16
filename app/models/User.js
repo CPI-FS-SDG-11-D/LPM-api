@@ -16,7 +16,7 @@ const userSchema = new Schema(
             required: true,
             type: String
         },
-        urlPhoto: { 
+        urlUser: { 
             required: true,
             type: String,
             default: 'https://res.cloudinary.com/ddpbwjjfz/image/upload/v1697472188/profile/gek0crksf01d7l1pehgz.jpg'

@@ -32,7 +32,10 @@ const complaintSchema = new Schema(
       type: Number,
       required: true,
       default: 0
-    },  
+    }, 
+    urlComplaint: { 
+      type: String,
+    }
   },
   {
     timestamps: true,

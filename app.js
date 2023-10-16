@@ -11,6 +11,7 @@ const authRoutes = require('./app/routes/authRoute');
 const userRoutes = require('./app/routes/userRoute');
 const complaintRoutes = require('./app/routes/complaintRoute');
 const voteRoutes = require('./app/routes/voteRoute');
+const uploadImageRoutes = require('./app/routes/uploadImageRoute');
 
 const app = express();
 const port = process.env.PORT; // Set Port Server
@@ -25,6 +26,7 @@ app.use('/api', cors(), authRoutes);
 app.use('/api', cors(), userRoutes);
 app.use('/api/complaints', cors(), complaintRoutes);
 app.use('/api', cors(), voteRoutes);
+app.use('/api', cors(), uploadImageRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

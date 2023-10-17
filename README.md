@@ -165,7 +165,7 @@ npm run start
 - Body:
     ``` json
     {
-      "image": image
+      "image": image (type=file, max=2mb)
     }
   ```
 - Usage:
@@ -322,7 +322,7 @@ curl -X GET URL Patterns
 - Body:
     ``` json
     {
-      "image": image
+      "image": image (type=file, max=2mb)
     }
   ```
 - Usage:

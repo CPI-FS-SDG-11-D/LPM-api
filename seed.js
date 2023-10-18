@@ -68,6 +68,7 @@ async function seedComplaint() {
       ]),
       totalUpvotes: usersUpvote,
       totalDownvotes: users.length - usersUpvote,
+      urlComplaint: faker.image.urlPlaceholder({ width: 128, height: 128, backgroundColor: '000000', textColor: 'FF0000', format: 'png', text: 'lorem ipsum' })
     });
   }
 
@@ -86,7 +87,6 @@ async function seedComplaint() {
       "_id totalUpvotes totalDownvotes"
     );
 
-    console.log({ complaints });
     seedFeedback();
   }
 }

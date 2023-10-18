@@ -3,9 +3,6 @@ const Complaint = require("../models/Complaint");
 const User = require('../models/User');
 const Feedback = require('../models/Feedback');
 
-const jwt = require("jsonwebtoken");
-const accessToken = process.env.SECRET_TOKEN;
-
 async function getComplaints(req, res) {
   try {
     let user = req.user ?? "";
@@ -40,6 +37,7 @@ async function getComplaints(req, res) {
       {
         $group: {
           _id: "$_id",
+          username: { $first: "$user.username" },
           title: { $first: "$title" },
           description: { $first: "$description" },
           status: { $first: "$status" },
@@ -77,18 +75,23 @@ async function getComplaints(req, res) {
               ],
             },
           },
+          urlComplaint: { $first: "$urlComplaint" },
+          createdAt:  { $first: "$createdAt" },
         },
       },
       // tahap keempat: project field-field yang ingin ditampilkan
       {
         $project: {
           _id: 1,
+          username: 1,
           title: 1,
           description: 1,
           status: 1,
           totalUpvotes: 1,
           totalDownvotes: 1,
           vote_flag: 1,
+          urlComplaint: 1,
+          createdAt: 1,
         },
       },
     ]);

@@ -1,6 +1,8 @@
 const mongoose = require("mongoose");
 const { ObjectId } = require("mongodb");
 const { Schema } = mongoose;
+const mongoosePaginate = require("mongoose-paginate-v2");
+const mongooseAggregatePaginate = require("mongoose-aggregate-paginate-v2");
 
 const complaintSchema = new Schema(
   {
@@ -8,38 +10,41 @@ const complaintSchema = new Schema(
       type: ObjectId,
       required: true,
       index: true,
-      ref: 'User'
+      ref: "User",
     },
     title: {
       type: String,
       maxLength: 1000,
-      required: true
+      required: true,
     },
     description: {
       type: String,
-      required: true
+      required: true,
     },
     status: {
       type: String,
-      required: true
+      required: true,
     },
     totalUpvotes: {
       type: Number,
       required: true,
-      default: 0
+      default: 0,
     },
     totalDownvotes: {
       type: Number,
       required: true,
-      default: 0
-    }, 
-    urlComplaint: { 
+      default: 0,
+    },
+    urlComplaint: {
       type: String,
-    }
+    },
   },
   {
     timestamps: true,
   }
 );
+
+complaintSchema.plugin(mongoosePaginate);
+complaintSchema.plugin(mongooseAggregatePaginate);
 
 module.exports = mongoose.model("Complaint", complaintSchema);

@@ -16,6 +16,7 @@ example: router.get('/profile', **passAuthentication**, userController.profileUs
 */
 
 router.get("/", passAuthentication, complaintController.getComplaints);
+router.get("/viral", passAuthentication, complaintController.getViralComplaints);
 // router.get("/complaints", complaintController.loadComplaints);
 router.post("/", authentication, complaintController.addComplaint);
 router.post("/votes", authentication, complaintController.votes);

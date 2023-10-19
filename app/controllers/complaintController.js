@@ -111,7 +111,7 @@ async function getComplaints(req, res) {
     ]);
 
     let complaints;
-    Complaint
+    await Complaint
     .aggregatePaginate(complaintAggregate, options)
     .then(function (result) {
       complaints = result.docs ?? [];

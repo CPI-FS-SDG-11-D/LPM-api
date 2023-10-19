@@ -226,12 +226,13 @@ npm run start
 
 ### 7. Get All Complaints
 
-This endpoint allows you to get a list of all the complaints that have been submitted by the users. You can use the GET method to request this endpoint without any authentication or body parameters.
+This endpoint allows you to get a list of all the complaints that have been submitted by the users.
 
 - Method: `GET`
-- URL Patterns: `/api/complaints/`
-- Authetication: `false`
+- URL Patterns: `/api/complaints?page=2&limit=3`
+- Authentication: `true`, but guest user can pass
 - Body: `none`
+- Query: `page`, `limit`. Default value are `page=1` and `limit=5` 
 - Usage:
 
 ```bash
@@ -252,6 +253,7 @@ curl -X GET URL Patterns
                 "totalUpvotes": Number,
                 "totalDownvotes": Number,
                 "vote_flag" : String,
+                "urlComplaint" : String,
                 "createdAt": Timestamps,
             },
             // more complaints ...
@@ -501,5 +503,37 @@ curl -X GET URL Patterns
     ```json
     {
       "message": "User already voted"
+    }
+    ```
+### 15. Get Viral Complaints
+
+- Method: `GET`
+- URL Patterns: `/api/complaints/viral
+- Authentication: `false`
+- Body: `none`
+- Usage:
+
+```bash
+curl -X GET URL Patterns
+```
+
+- Response:
+  - Success: (200)
+    ```json
+    {
+        "complaints": [
+            {
+                "_id": ObjectId,
+                "title": String,
+                "totalUpvotes": Number,
+            },
+            // more viral complaints ...
+        ]
+    }
+    ```
+  - Errors: (500)
+    ```json
+    { 
+        "error": "Internal server error" 
     }
     ```

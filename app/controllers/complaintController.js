@@ -1,14 +1,24 @@
 const mongoose = require("mongoose");
 const Complaint = require("../models/Complaint");
-const User = require('../models/User');
-const Feedback = require('../models/Feedback');
+const User = require("../models/User");
+const Feedback = require("../models/Feedback");
 
 async function getComplaints(req, res) {
   try {
     let user = req.user ?? "";
 
+    // Define the sorting options
+    const sortByCreatedAt = -1; // Sort by createdAt in descending order (latest first)
+    const sortByTotalUpvotes = -1; // Sort by totalUpvotes in descending order (highest first)
+    const { page, limit } = req.query;
+
+    const options = {
+      page: page ?? 1,
+      limit: limit ?? 5,
+    };
+
     // gunakan aggregate pada model Complaint
-    const complaints = await Complaint.aggregate([
+    let complaintAggregate = Complaint.aggregate([
       // tahap pertama: lookup user dan feedback
       {
         $lookup: {
@@ -76,7 +86,7 @@ async function getComplaints(req, res) {
             },
           },
           urlComplaint: { $first: "$urlComplaint" },
-          createdAt:  { $first: "$createdAt" },
+          createdAt: { $first: "$createdAt" },
         },
       },
       // tahap keempat: project field-field yang ingin ditampilkan
@@ -94,6 +104,73 @@ async function getComplaints(req, res) {
           createdAt: 1,
         },
       },
+      {
+        $sort: {
+          _id: sortByCreatedAt, // Sort by createdAt
+        },
+      },
+    ]);
+
+    let complaints;
+    Complaint
+    .aggregatePaginate(complaintAggregate, options)
+    .then(function (result) {
+      complaints = result.docs ?? [];
+    }).catch(function (err) {
+      console.log(err);
+    });
+
+    const virals = await Complaint.aggregate([
+      // tahap pertama: lookup user dan feedback
+      {
+        $lookup: {
+          from: "users",
+          localField: "userID",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "feedbacks",
+          localField: "_id",
+          foreignField: "complaintID",
+          as: "feedbacks",
+        },
+      },
+      // tahap kedua: unwind user dan feedbacks
+      {
+        $unwind: "$user",
+      },
+      {
+        $unwind: "$feedbacks",
+      },
+      // tahap ketiga: group berdasarkan _id complaint
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          // hitung total is_upvote
+          totalUpvotes: { $first: "$totalUpvotes" },
+        },
+      },
+      // tahap keempat: project field-field yang ingin ditampilkan
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          totalUpvotes: 1,
+        },
+      },
+      {
+        $sort: {
+          totalUpvotes: sortByTotalUpvotes, // Sort by totalUpvotes
+        },
+      },
+      // tahap kelimat: limit agar hanya mengeluarkan 4
+      {
+        $limit: 4,
+      },
     ]);
 
     // Send the complaints as a response
@@ -106,10 +183,78 @@ async function getComplaints(req, res) {
   }
 }
 
+async function getViralComplaints(req, res) {
+  try {
+    // Define the sorting options
+    const sortByTotalUpvotes = -1; // Sort by totalUpvotes in descending order (highest first)
+
+    const virals = await Complaint.aggregate([
+      // tahap pertama: lookup user dan feedback
+      {
+        $lookup: {
+          from: "users",
+          localField: "userID",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      {
+        $lookup: {
+          from: "feedbacks",
+          localField: "_id",
+          foreignField: "complaintID",
+          as: "feedbacks",
+        },
+      },
+      // tahap kedua: unwind user dan feedbacks
+      {
+        $unwind: "$user",
+      },
+      {
+        $unwind: "$feedbacks",
+      },
+      // tahap ketiga: group berdasarkan _id complaint
+      {
+        $group: {
+          _id: "$_id",
+          title: { $first: "$title" },
+          // hitung total is_upvote
+          totalUpvotes: { $first: "$totalUpvotes" },
+        },
+      },
+      // tahap keempat: project field-field yang ingin ditampilkan
+      {
+        $project: {
+          _id: 1,
+          title: 1,
+          totalUpvotes: 1,
+        },
+      },
+      {
+        $sort: {
+          totalUpvotes: sortByTotalUpvotes, // Sort by totalUpvotes
+        },
+      },
+      // tahap kelimat: limit agar hanya mengeluarkan 4
+      {
+        $limit: 4,
+      },
+    ]);
+
+    // Send the viral complaints as a response
+    res.status(200).json({ virals: virals });
+  } catch (err) {
+    console.error("Error Viral Complaint :", err);
+
+    // Handle any errors
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 const loadComplaints = async (_, res) => {
   try {
     const allComplaints = await Complaint.find();
-    
+
     res.status(200).json(allComplaints);
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -192,7 +337,9 @@ const addComplaint = async (req, res) => {
   const { title, description } = req.body;
 
   if (!title || !description) {
-    return res.status(400).json({ message: "Harap isi semua bidang yang diperlukan (title dan description)" });
+    return res.status(400).json({
+      message: "Harap isi semua bidang yang diperlukan (title dan description)",
+    });
   }
 
   try {
@@ -208,7 +355,9 @@ const addComplaint = async (req, res) => {
     const complaint = new Complaint(complaintData);
     await complaint.save();
 
-    res.status(201).json({ message: "Keluhan berhasil ditambahkan", complaint });
+    res
+      .status(201)
+      .json({ message: "Keluhan berhasil ditambahkan", complaint });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -224,7 +373,7 @@ const detailComplaint = async (req, res) => {
 
     const responseData = { complaint };
 
-    if(authHeader){
+    if (authHeader) {
       const isUserLoggedIn = authHeader ? "True" : "False";
       const user = await User.findOne({ _id: req.user.userId });
       const feedback = await Feedback.findOne({
@@ -257,7 +406,9 @@ const updateComplaint = async (req, res) => {
     }
 
     if (complaint.userID.toString() !== req.user.userId) {
-      return res.status(403).json({ message: "You are not the owner of this complaint" });
+      return res
+        .status(403)
+        .json({ message: "You are not the owner of this complaint" });
     }
 
     complaint.status = req.body.status;
@@ -267,7 +418,7 @@ const updateComplaint = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
-}
+};
 
 const searchComplaint = async (req, res) => {
   const authHeader = req.header("Authorization");
@@ -300,7 +451,10 @@ const searchComplaint = async (req, res) => {
           is_downvote: feedback ? feedback.is_downvote : false,
         };
 
-        responseData.complaints.push({ complaint, feedback: complaint.feedback });
+        responseData.complaints.push({
+          complaint,
+          feedback: complaint.feedback,
+        });
       }
     } else {
       responseData.complaints = complaints;
@@ -327,6 +481,7 @@ const deleteComplaint = (req, res) => {
 
 module.exports = {
   getComplaints,
+  getViralComplaints,
   votes,
   loadComplaints,
   addComplaint,

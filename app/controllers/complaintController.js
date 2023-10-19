@@ -9,7 +9,6 @@ async function getComplaints(req, res) {
 
     // Define the sorting options
     const sortByCreatedAt = -1; // Sort by createdAt in descending order (latest first)
-    const sortByTotalUpvotes = -1; // Sort by totalUpvotes in descending order (highest first)
     const { page, limit } = req.query;
 
     const options = {
@@ -119,59 +118,6 @@ async function getComplaints(req, res) {
     }).catch(function (err) {
       console.log(err);
     });
-
-    const virals = await Complaint.aggregate([
-      // tahap pertama: lookup user dan feedback
-      {
-        $lookup: {
-          from: "users",
-          localField: "userID",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      {
-        $lookup: {
-          from: "feedbacks",
-          localField: "_id",
-          foreignField: "complaintID",
-          as: "feedbacks",
-        },
-      },
-      // tahap kedua: unwind user dan feedbacks
-      {
-        $unwind: "$user",
-      },
-      {
-        $unwind: "$feedbacks",
-      },
-      // tahap ketiga: group berdasarkan _id complaint
-      {
-        $group: {
-          _id: "$_id",
-          title: { $first: "$title" },
-          // hitung total is_upvote
-          totalUpvotes: { $first: "$totalUpvotes" },
-        },
-      },
-      // tahap keempat: project field-field yang ingin ditampilkan
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          totalUpvotes: 1,
-        },
-      },
-      {
-        $sort: {
-          totalUpvotes: sortByTotalUpvotes, // Sort by totalUpvotes
-        },
-      },
-      // tahap kelimat: limit agar hanya mengeluarkan 4
-      {
-        $limit: 4,
-      },
-    ]);
 
     // Send the complaints as a response
     res.status(200).json({ complaints: complaints });

@@ -310,31 +310,33 @@ const addComplaint = async (req, res) => {
 };
 
 const detailComplaint = async (req, res) => {
-  const authHeader = req.header("Authorization");
   try {
     const complaint = await Complaint.findOne({ _id: req.params.id });
     if (complaint === null) {
       return res.status(404).json({ message: "Complaint NOT Found." });
     }
+    const user = await User.findOne({ _id: complaint.userID });
+    const username = user.username;
 
-    const responseData = { complaint };
+    const responseData = { username, complaint};
 
-    if (authHeader) {
-      const isUserLoggedIn = authHeader ? "True" : "False";
-      const user = await User.findOne({ _id: req.user.userId });
+    if (req.user) {
+      const isComplaintOwner = req.user.userId == complaint.userID;
       const feedback = await Feedback.findOne({
         complaintID: req.params.id,
         userID: req.user.userId,
       });
 
-      const userData = {
-        username: user.username,
+      const feedbacks = {
         is_upvote: feedback ? feedback.is_upvote : false,
         is_downvote: feedback ? feedback.is_downvote : false,
       };
 
-      responseData.isUserLoggedIn = isUserLoggedIn;
-      responseData.userData = userData;
+      responseData.isComplaintOwner = isComplaintOwner;
+      responseData.feedbacks = feedbacks;
+    } else {
+      responseData.isComplaintOwner = false;
+      responseData.feedbacks = null;
     }
 
     res.status(200).json(responseData);
@@ -367,12 +369,9 @@ const updateComplaint = async (req, res) => {
 };
 
 const searchComplaint = async (req, res) => {
-  const authHeader = req.header("Authorization");
-  const responseData = { username: null, complaints: [] };
-
   try {
     const searchTerm = req.query.title;
-    const regexPattern = new RegExp(`\\b${searchTerm}\\b`, "i");
+    const regexPattern = new RegExp(`\\b.*${searchTerm}.*\\b`, "i");
 
     const complaints = await Complaint.find({
       title: { $regex: regexPattern },
@@ -382,28 +381,24 @@ const searchComplaint = async (req, res) => {
       return res.status(404).json({ message: "Complaints NOT Found." });
     }
 
-    if (authHeader) {
-      const user = await User.findOne({ _id: req.user.userId });
-      responseData.username = user.username;
+    const responseData = [];
 
-      for (const complaint of complaints) {
-        const feedback = await Feedback.findOne({
-          complaintID: complaint._id,
-          userID: req.user.userId,
-        });
+    for (const complaint of complaints) {
+      const user = await User.findOne({ _id: complaint.userID });
+      const feedback = await Feedback.findOne({
+        complaintID: complaint._id,
+        userID: req.user ? req.user.userId : null,
+      });
 
-        complaint.feedback = {
+      responseData.push({
+        username: user.username,
+        complaint,
+        feedback: 
+          {
           is_upvote: feedback ? feedback.is_upvote : false,
           is_downvote: feedback ? feedback.is_downvote : false,
-        };
-
-        responseData.complaints.push({
-          complaint,
-          feedback: complaint.feedback,
-        });
-      }
-    } else {
-      responseData.complaints = complaints;
+          }
+      });
     }
 
     res.status(200).json(responseData);
@@ -412,16 +407,33 @@ const searchComplaint = async (req, res) => {
   }
 };
 
-const deleteComplaint = (req, res) => {
+const deleteComplaint = async (req, res) => {
   try {
-    const deletedComplaint = Complaint.deleteOne({ _id: req.params.id }).then(
-      (result) => {
-        return result;
-      }
-    );
-    res.status(200).redirect("/api/complaints");
+    const complaint = await Complaint.findOne({ _id: req.params.id });
+
+    if (!complaint) {
+      return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    if (complaint.userID.toString() !== req.user.userId) {
+      return res
+        .status(403)
+        .json({ message: "You are not the owner of this complaint" });
+    }
+
+    if (complaint.status !== "pending") {
+      return res
+        .status(403)
+        .json({ message: "You can only delete pending complaints" });
+    }
+
+    // Menghapus Complaint
+    await Complaint.deleteOne({ _id: req.params.id });
+
+    res.status(200).json({ message: "Complaint deleted successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    console.error("Error deleting complaint:", error); // Tambahkan ini untuk melihat kesalahan di konsol
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

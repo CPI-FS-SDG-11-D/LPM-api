@@ -280,7 +280,7 @@ const addComplaint = async (req, res) => {
   }
 
   const userID = req.user.userId;
-  const { title, description } = req.body;
+  const { title, description, urlComplaint } = req.body;
 
   if (!title || !description) {
     return res.status(400).json({
@@ -296,6 +296,7 @@ const addComplaint = async (req, res) => {
       status: "pending",
       totalUpvotes: 0,
       totalDownvotes: 0,
+      urlComplaint: urlComplaint,
     };
 
     const complaint = new Complaint(complaintData);
@@ -432,7 +433,6 @@ const deleteComplaint = async (req, res) => {
 
     res.status(200).json({ message: "Complaint deleted successfully" });
   } catch (error) {
-    console.error("Error deleting complaint:", error); // Tambahkan ini untuk melihat kesalahan di konsol
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

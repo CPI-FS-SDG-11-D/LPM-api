@@ -5,7 +5,11 @@ const Feedback = require("../models/Feedback");
 
 async function getComplaints(req, res) {
   try {
-    let user = req.user ?? "";
+    let user = "";
+    if (req.user) {
+      const userId = new mongoose.Types.ObjectId(req.user.userId); // Konversi ke ObjectId
+      user = await User.findOne({ _id: userId }); // Menggunakan ObjectId
+    }
 
     // Define the sorting options
     const sortByCreatedAt = -1; // Sort by createdAt in descending order (latest first)
@@ -61,7 +65,7 @@ async function getComplaints(req, res) {
               is_downvote: "$feedbacks.is_downvote",
             },
           },
-          vote_flag: {
+          feedback: {
             // tambahkan operator $first di sini
             $first: {
               $cond: [
@@ -88,24 +92,30 @@ async function getComplaints(req, res) {
           createdAt: { $first: "$createdAt" },
         },
       },
-      // tahap keempat: project field-field yang ingin ditampilkan
-      {
-        $project: {
-          _id: 1,
-          username: 1,
-          title: 1,
-          description: 1,
-          status: 1,
-          totalUpvotes: 1,
-          totalDownvotes: 1,
-          vote_flag: 1,
-          urlComplaint: 1,
-          createdAt: 1,
-        },
-      },
       {
         $sort: {
           _id: sortByCreatedAt, // Sort by createdAt
+        },
+      },
+      // tahap keempat: project field-field yang ingin ditampilkan
+      {
+        $project: {
+          _id: 0,
+          complaint: {
+            _id: "$_id",
+            userID: "$userID",
+            title: "$title",
+            description: "$description",
+            status: "$status",
+            totalUpvotes: "$totalUpvotes",
+            totalDownvotes: "$totalDownvotes",
+            createdAt: "$createdAt",
+            urlComplaint: "$urlComplaint",
+          },
+          feedback: {
+            is_upvote: { $eq: ["$feedback", "upvote"] },
+            is_downvote: { $eq: ["$feedback", "downvote"] },
+          },
         },
       },
     ]);
@@ -119,8 +129,14 @@ async function getComplaints(req, res) {
       console.log(err);
     });
 
+    let results = {
+      username: user.username ?? "",
+      urlUser: user.urlUser ?? "",
+      complaints,
+    }
+
     // Send the complaints as a response
-    res.status(200).json({ complaints: complaints });
+    res.status(200).json({ ...results });
   } catch (err) {
     console.error("Error Complaint :", err);
 

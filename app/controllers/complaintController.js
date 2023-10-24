@@ -320,7 +320,7 @@ const addComplaint = async (req, res) => {
 
     res
       .status(201)
-      .json({ message: "Keluhan berhasil ditambahkan", complaint });
+      .json({ message: "Complaint added successfully", complaint });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -334,8 +334,9 @@ const detailComplaint = async (req, res) => {
     }
     const user = await User.findOne({ _id: complaint.userID });
     const username = user.username;
+    const urlUser = user.urlUser;
 
-    const responseData = { username, complaint};
+    const responseData = { username, urlUser, complaint};
 
     if (req.user) {
       const isComplaintOwner = req.user.userId == complaint.userID;
@@ -353,7 +354,10 @@ const detailComplaint = async (req, res) => {
       responseData.feedbacks = feedbacks;
     } else {
       responseData.isComplaintOwner = false;
-      responseData.feedbacks = null;
+      responseData.feedbacks = {
+        is_upvote: false,
+        is_downvote: false,
+      };;
     }
 
     res.status(200).json(responseData);
@@ -409,6 +413,7 @@ const searchComplaint = async (req, res) => {
 
       responseData.push({
         username: user.username,
+        urlUser: user.urlUser,
         complaint,
         feedback: 
           {

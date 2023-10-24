@@ -277,6 +277,7 @@ curl -X GET URL Patterns
   {
   "title": String,
   "description": String
+  "urlComplaint": String
   }
   ```
 - Usage:
@@ -289,7 +290,7 @@ curl -X GET URL Patterns
   - Success: (201)
     ```json
     {
-    "message": "Aduan berhasil ditambahkan", 
+    "message": "Complaint added successfully", 
     "complaint":
         {
           "_id": ObjectId,
@@ -299,6 +300,7 @@ curl -X GET URL Patterns
           "status": String,
           "totalUpvotes": Number,
           "totalDownvotes": Number,
+          "urlComplaint": String,
           "createdAt": Timestamps,
           "updatedAt": Timestamps
         }
@@ -359,28 +361,29 @@ curl -X GET URL Patterns
 - Response:
   - Success: (200)
     ```json
-    {
-    "username": String,
-    "complaints": [
-        {
-            "complaint": {
-                "_id": ObjectId,
-                "userID": ObjectId,
-                "title": String,
-                "description": String,
-                "status": String,
-                "totalUpvotes": Number,
-                "totalDownvotes": Number,
-                "createdAt": Timestamps,
-                "updatedAt": Timestamps
-            },
-            "feedback": {
-                "is_upvote": Boolean,
-                "is_downvote": Boolean
-            }
+    [
+      {
+      "username": String,
+      "urlUser": String,
+      "complaint": {
+          "_id": ObjectId,
+          "userID": ObjectId,
+          "title": String,
+          "description": String,
+          "status": String,
+          "totalUpvotes": Number,
+          "totalDownvotes": Number,
+          "createdAt": Timestamps,
+          "updatedAt": Timestamps,
+          "urlComplaint": String,
+        },
+      "feedback": {
+          "is_upvote": Boolean,
+          "is_downvote": Boolean
         }
-      ]
-    }
+      },
+      //More Complaint...
+    ]
     ```
   - Errors: (404)
     ```json
@@ -400,8 +403,9 @@ curl -X GET URL Patterns
   - Success: (200)
     ```json
     {
-    "complaint": 
-        {
+      "username": String,
+      "urlUser": String,
+      "complaint": {
           "_id": ObjectId,
           "userID": ObjectId,
           "title": String,
@@ -410,13 +414,13 @@ curl -X GET URL Patterns
           "totalUpvotes": Number,
           "totalDownvotes": Number,
           "createdAt": Timestamps,
-          "updatedAt": Timestamps
+          "updatedAt": Timestamps,
+          "urlComplaint": String,
         },
-        "isUserLoggedIn": Boolean,
-        "userData": {
-          "username": String,
+      "isComplaintOwner": Boolean,
+      "feedback": {
           "is_upvote": Boolean,
-          "is_downvote": Boolean,
+          "is_downvote": Boolean
         }
     }
     ```
@@ -435,7 +439,7 @@ curl -X GET URL Patterns
 - Body: 
   ```json
   {
-  "status": String
+  "status": String ("pending"/"in progress"/"resolved")
   }
   ```
 - Usage:
@@ -456,7 +460,33 @@ curl -X GET URL Patterns
     }
     ```
 
-### 13. Upvote Complaint
+### 13. Delete Complaint
+- Method: `DELETE`
+- URL Patterns: `/api/complaints/:id`
+- Authetication: `true`
+- Params: `id`
+- Body: `none`
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns: /api/complaints/:id
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "message": "Complaint deleted successfully"
+    }
+    ```
+  - Errors: (404)
+    ```json
+    {
+      "message": error.message
+    }
+    ```
+
+### 14. Upvote Complaint
 - Method: `PUT`
 - URL Patterns: `/api/upvote/:complaintID`
 - Authetication: `true`
@@ -481,7 +511,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 14. Downvote Complaint
+### 15. Downvote Complaint
 - Method: `PUT`
 - URL Patterns: `/api/downvote/:complaintID`
 - Authetication: `true`
@@ -505,7 +535,7 @@ curl -X GET URL Patterns
       "message": "User already voted"
     }
     ```
-### 15. Get Viral Complaints
+### 16. Get Viral Complaints
 
 - Method: `GET`
 - URL Patterns: `/api/complaints/viral

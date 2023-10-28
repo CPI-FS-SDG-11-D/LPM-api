@@ -336,7 +336,21 @@ const detailComplaint = async (req, res) => {
     const username = user.username;
     const urlUser = user.urlUser;
 
-    const responseData = { username, urlUser, complaint};
+    const responseData = { username, urlUser };
+
+    const formattedComplaint = {
+      _id: complaint._id,
+      userID: complaint.userID,
+      title: complaint.title,
+      description: complaint.description,
+      status: complaint.status,
+      totalUpvotes: complaint.totalUpvotes,
+      totalDownvotes: complaint.totalDownvotes,
+      createdAt: complaint.createdAt,
+      urlComplaint: complaint.urlComplaint || null
+    };
+
+    responseData.complaint = formattedComplaint;
 
     if (req.user) {
       const isComplaintOwner = req.user.userId == complaint.userID;
@@ -357,7 +371,7 @@ const detailComplaint = async (req, res) => {
       responseData.feedbacks = {
         is_upvote: false,
         is_downvote: false,
-      };;
+      };
     }
 
     res.status(200).json(responseData);
@@ -383,7 +397,7 @@ const updateComplaint = async (req, res) => {
     complaint.status = req.body.status;
     await complaint.save();
 
-    res.status(200).redirect(`/api/complaints/${req.params.id}`);
+    res.status(200).json({ message: "Complaint updated successfully" });
   } catch (error) {
     res.status(500).json({ message: "Internal Server Error" });
   }
@@ -411,15 +425,26 @@ const searchComplaint = async (req, res) => {
         userID: req.user ? req.user.userId : null,
       });
 
+      const formattedComplaint = {
+        _id: complaint._id,
+        userID: complaint.userID,
+        title: complaint.title,
+        description: complaint.description,
+        status: complaint.status,
+        totalUpvotes: complaint.totalUpvotes,
+        totalDownvotes: complaint.totalDownvotes,
+        createdAt: complaint.createdAt,
+        urlComplaint: complaint.urlComplaint || null,
+      };
+
       responseData.push({
         username: user.username,
         urlUser: user.urlUser,
-        complaint,
-        feedback: 
-          {
+        complaint: formattedComplaint,
+        feedback: {
           is_upvote: feedback ? feedback.is_upvote : false,
           is_downvote: feedback ? feedback.is_downvote : false,
-          }
+        },
       });
     }
 
@@ -430,6 +455,9 @@ const searchComplaint = async (req, res) => {
 };
 
 const deleteComplaint = async (req, res) => {
+  const session = await Complaint.startSession();
+  session.startTransaction();
+
   try {
     const complaint = await Complaint.findOne({ _id: req.params.id });
 
@@ -449,11 +477,20 @@ const deleteComplaint = async (req, res) => {
         .json({ message: "You can only delete pending complaints" });
     }
 
-    // Menghapus Complaint
-    await Complaint.deleteOne({ _id: req.params.id });
+    // Menghapus aduan
+    await Complaint.deleteOne({ _id: complaint._id });
+
+    // Menghapus seluruh dokument "Feedback" yang memiliki complaintID yang sama
+    await Feedback.deleteMany({ complaintID: complaint._id });
+
+    await session.commitTransaction();
+    session.endSession();
 
     res.status(200).json({ message: "Complaint deleted successfully" });
   } catch (error) {
+    await session.abortTransaction();
+    session.endSession();
+
     res.status(500).json({ message: "Internal Server Error" });
   }
 };

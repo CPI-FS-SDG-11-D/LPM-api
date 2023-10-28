@@ -374,7 +374,6 @@ curl -X GET URL Patterns
           "totalUpvotes": Number,
           "totalDownvotes": Number,
           "createdAt": Timestamps,
-          "updatedAt": Timestamps,
           "urlComplaint": String,
         },
       "feedback": {
@@ -414,7 +413,6 @@ curl -X GET URL Patterns
           "totalUpvotes": Number,
           "totalDownvotes": Number,
           "createdAt": Timestamps,
-          "updatedAt": Timestamps,
           "urlComplaint": String,
         },
       "isComplaintOwner": Boolean,
@@ -450,8 +448,10 @@ curl -X GET URL Patterns
   ```
 - Response:
   - Success: (200)
-    ```bash
-    redirectUrl: `/api/complaints/:id`
+    ```json
+    {
+      "message": "Complaint updated successfully"
+    }
     ```
   - Errors: (404)
     ```json

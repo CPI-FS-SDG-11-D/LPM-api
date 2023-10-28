@@ -37,6 +37,7 @@ const complaintSchema = new Schema(
     },
     urlComplaint: {
       type: String,
+      default: null,
     },
   },
   {

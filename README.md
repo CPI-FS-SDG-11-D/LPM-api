@@ -243,21 +243,29 @@ curl -X GET URL Patterns
   - Success: (200)
     ```json
     {
-        "complaints": [
-            {
-                "_id": ObjectId,
-                "username": String,
-                "title": String,
-                "description": String,
-                "status": String,
-                "totalUpvotes": Number,
-                "totalDownvotes": Number,
-                "vote_flag" : String,
-                "urlComplaint" : String,
-                "createdAt": Timestamps,
+      "complaints": [
+        {
+          "username": String,
+          "urlUser": String,
+          "complaint": {
+              "_id": ObjectId,
+              "userID": ObjectId,
+              "title": String,
+              "description": String,
+              "status": String,
+              "totalUpvotes": Number,
+              "totalDownvotes": Number,
+              "createdAt": Timestamps,
+              "updatedAt": Timestamps,
+              "urlComplaint": String,
             },
-            // more complaints ...
-        ]
+          "feedback": {
+              "is_upvote": Boolean,
+              "is_downvote": Boolean
+            }
+        },
+        //More Complaint...
+      ]
     }
     ```
   - Errors: (500)

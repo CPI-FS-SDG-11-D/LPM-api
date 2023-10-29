@@ -50,6 +50,7 @@ async function getComplaints(req, res) {
       {
         $group: {
           _id: "$_id",
+          userID: { $first: "$user.userID" },
           username: { $first: "$user.username" },
           urlUser: { $first: "$user.urlUser" },
           title: { $first: "$title" },

@@ -51,6 +51,7 @@ async function getComplaints(req, res) {
         $group: {
           _id: "$_id",
           username: { $first: "$user.username" },
+          urlUser: { $first: "$user.urlUser" },
           title: { $first: "$title" },
           description: { $first: "$description" },
           status: { $first: "$status" },
@@ -71,10 +72,7 @@ async function getComplaints(req, res) {
               $cond: [
                 // gunakan tanda kutip ganda di sini
                 {
-                  $setIsSubset: [
-                    [{ $toString: "$feedbacks.userID" }],
-                    [user.userId],
-                  ],
+                  $setIsSubset: [["$feedbacks.userID"], [user._id]],
                 },
                 // gunakan tanda kutip ganda di sini juga
                 {
@@ -90,6 +88,7 @@ async function getComplaints(req, res) {
           },
           urlComplaint: { $first: "$urlComplaint" },
           createdAt: { $first: "$createdAt" },
+          updatedAt: { $first: "$updatedAt" },
         },
       },
       {
@@ -101,6 +100,8 @@ async function getComplaints(req, res) {
       {
         $project: {
           _id: 0,
+          username: "$username",
+          urlUser: "$urlUser",
           complaint: {
             _id: "$_id",
             userID: "$userID",
@@ -110,8 +111,10 @@ async function getComplaints(req, res) {
             totalUpvotes: "$totalUpvotes",
             totalDownvotes: "$totalDownvotes",
             createdAt: "$createdAt",
+            updatedAt: "$updatedAt",
             urlComplaint: "$urlComplaint",
           },
+          // feedbacks: "$feedbacks",
           feedback: {
             is_upvote: { $eq: ["$feedback", "upvote"] },
             is_downvote: { $eq: ["$feedback", "downvote"] },
@@ -121,22 +124,16 @@ async function getComplaints(req, res) {
     ]);
 
     let complaints;
-    await Complaint
-    .aggregatePaginate(complaintAggregate, options)
-    .then(function (result) {
-      complaints = result.docs ?? [];
-    }).catch(function (err) {
-      console.log(err);
-    });
-
-    let results = {
-      username: user.username ?? "",
-      urlUser: user.urlUser ?? "",
-      complaints,
-    }
+    await Complaint.aggregatePaginate(complaintAggregate, options)
+      .then(function (result) {
+        complaints = result.docs ?? [];
+      })
+      .catch(function (err) {
+        console.log(err);
+      });
 
     // Send the complaints as a response
-    res.status(200).json({ ...results });
+    res.status(200).json({ complaints });
   } catch (err) {
     console.error("Error Complaint :", err);
 
@@ -347,7 +344,7 @@ const detailComplaint = async (req, res) => {
       totalUpvotes: complaint.totalUpvotes,
       totalDownvotes: complaint.totalDownvotes,
       createdAt: complaint.createdAt,
-      urlComplaint: complaint.urlComplaint || null
+      urlComplaint: complaint.urlComplaint || null,
     };
 
     responseData.complaint = formattedComplaint;

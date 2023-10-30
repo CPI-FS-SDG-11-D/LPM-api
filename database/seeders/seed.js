@@ -1,8 +1,8 @@
 require("dotenv").config();
 const mongoose = require("mongoose");
-const User = require("./app/models/User");
-const Complaint = require("./app/models/Complaint");
-const Feedback = require("./app/models/Feedback");
+const User = require("../../app/models/User");
+const Complaint = require("../../app/models/Complaint");
+const Feedback = require("../../app/models/Feedback");
 const bcrypt = require("bcrypt");
 const { faker } = require("@faker-js/faker");
 

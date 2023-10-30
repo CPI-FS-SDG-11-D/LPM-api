@@ -15,14 +15,12 @@ add passAuthentication function after url before controller
 example: router.get('/profile', **passAuthentication**, userController.profileUser)
 */
 
-router.get("/", passAuthentication, complaintController.getComplaints);
-router.get("/viral", passAuthentication, complaintController.getViralComplaints);
-// router.get("/complaints", complaintController.loadComplaints);
-router.post("/", authentication, complaintController.addComplaint);
-router.post("/votes", authentication, complaintController.votes);
-router.get("/search", passAuthentication, complaintController.searchComplaint);
-router.get("/:id", passAuthentication, complaintController.detailComplaint);
-router.put("/:id/update-status", authentication, complaintController.updateComplaint);
-router.delete("/:id", authentication, complaintController.deleteComplaint);
+router.post("/complaints", authentication, complaintController.addComplaint);
+router.get("/complaints", passAuthentication, complaintController.getComplaints);
+router.get("/complaints/:id", passAuthentication, complaintController.detailComplaint);
+router.get("/complaints/viral", passAuthentication, complaintController.getViralComplaints);
+router.get("/complaints/search", passAuthentication, complaintController.searchComplaint);
+router.put("/complaints/:id/update-status", authentication, complaintController.updateComplaint);
+router.delete("/complaints/:id", authentication, complaintController.deleteComplaint);
 
 module.exports = router;

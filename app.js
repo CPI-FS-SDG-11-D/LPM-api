@@ -24,7 +24,7 @@ app.use(morgan('combined'));
 // List API
 app.use('/api', cors(), authRoutes);
 app.use('/api', cors(), userRoutes);
-app.use('/api/complaints', cors(), complaintRoutes);
+app.use('/api', cors(), complaintRoutes);
 app.use('/api', cors(), voteRoutes);
 app.use('/api', cors(), uploadImageRoutes);
 

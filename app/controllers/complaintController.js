@@ -211,81 +211,6 @@ async function getViralComplaints(req, res) {
   }
 }
 
-const loadComplaints = async (_, res) => {
-  try {
-    const allComplaints = await Complaint.find();
-
-    res.status(200).json(allComplaints);
-  } catch (error) {
-    res.status(400).json({ message: error.message });
-  }
-};
-
-async function votes(req, res) {
-  const reqUser = req.user;
-  const { id } = req.body;
-  let { upvote, downvote } = req.body;
-
-  const isVoteNotValid =
-    (upvote === "0" && downvote === "0") ||
-    (upvote == "1" && downvote == "1") ||
-    (upvote === undefined && downvote === undefined);
-  if ((!id && !upvote && !downvote) || isVoteNotValid) {
-    return res.status(404).json({ message: "Bad request" });
-  }
-
-  const complaint = await Complaint.findOne({ _id: id }); // Find complain in database
-  if (!complaint) {
-    return res.status(404).json({ message: "Complaint not found" });
-  }
-
-  if (complaint.keterangan == "selesai" || complaint.keterangan == "nonaktif") {
-    return res.status(410).json({
-      message:
-        "Sorry, your complaint is no longer active or has been resolved.",
-    });
-  }
-
-  if (upvote === "upvote" || !downvote) {
-    upvote = 1;
-    downvote = 0;
-  }
-  if (downvote === "downvote" || !upvote) {
-    upvote = 0;
-    downvote = 1;
-  }
-
-  let feedback = await Feedback.findOne({
-    userID: reqUser.userId,
-    complaintID: id,
-  }); // Find feedback in
-  try {
-    if (feedback) {
-      if (
-        (feedback && feedback.upvote === upvote) ||
-        feedback.downvote === downvote
-      ) {
-        return res.status(200).json({ message: "Please make changes." });
-      }
-      feedback.upvote = upvote;
-      feedback.downvote = downvote;
-    } else {
-      feedback = new Feedback({
-        userID: reqUser.userId,
-        complaintID: id,
-        upvote: upvote,
-        downvote: downvote,
-      });
-    }
-
-    await feedback.save();
-    return res.status(200).json({ feedback: feedback });
-  } catch (err) {
-    console.error("Error feedback:", err);
-  }
-  res.status(404).json({ message: "Feedback not found" });
-}
-
 const addComplaint = async (req, res) => {
   if (!req.user) {
     return res.status(401).json({
@@ -496,8 +421,6 @@ const deleteComplaint = async (req, res) => {
 module.exports = {
   getComplaints,
   getViralComplaints,
-  votes,
-  loadComplaints,
   addComplaint,
   detailComplaint,
   updateComplaint,

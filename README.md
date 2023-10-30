@@ -1,7 +1,7 @@
 # LPM-api
 HTTP Rest API backend Layanan Pengaduan Masyarakat Application with Node js and Express js.
 
-How to setup local code program:
+## How to setup local code program:
 - Clone this repository
 - Rename .envExample to .env and fill in the section that must be filled
 - Run this command to instal dependencies:
@@ -11,6 +11,20 @@ npm install
 - Run this command to start the server:
 ```
 npm run start
+```
+
+## How to setup container in docker:
+- Run this command to build images:
+```
+docker build --tag naufan00/lpm-api:1.0 .
+```
+- Run this command to create container:
+```
+docker container create --name lpm-api -p 8000:8000 naufan00/lpm-api:1.0
+```
+- Run this command to start the container:
+```
+docker container start lpm-api
 ```
 
 ## How to Contribute

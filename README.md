@@ -3,7 +3,11 @@ HTTP Rest API backend Layanan Pengaduan Masyarakat Application with Node js and 
 
 ## How to setup local code program:
 - Clone this repository
-- Rename .envExample to .env and fill in the section that must be filled
+- run this command to pull .env file
+```
+npx dotenv-vault@latest pull
+```
+- OR Rename .env.example to .env and fill in the section that must be filled
 - Run this command to instal dependencies:
 ```
 npm install

@@ -1,7 +1,9 @@
 node_modules
 .gitignore
 .env
-config
-seedingController.js
-dummyComplaint.json
-dummyFeedback.json
+.env.me
+.env.vault
+.env*
+.flaskenv*
+!.env.project
+!.env.vault

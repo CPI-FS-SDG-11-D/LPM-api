@@ -1,7 +1,8 @@
 const express = require("express");
-const complaintController = require("../controllers/complaintController");
+
 const authentication = require("../middleware/authentication");
 const passAuthentication = require("../middleware/passAuthentication");
+const complaintController = require("../controllers/complaintController");
 
 const router = express.Router();
 
@@ -17,9 +18,9 @@ example: router.get('/profile', **passAuthentication**, userController.profileUs
 
 router.post("/complaints", authentication, complaintController.addComplaint);
 router.get("/complaints", passAuthentication, complaintController.getComplaints);
-router.get("/complaints/:id", passAuthentication, complaintController.detailComplaint);
 router.get("/complaints/viral", passAuthentication, complaintController.getViralComplaints);
 router.get("/complaints/search", passAuthentication, complaintController.searchComplaint);
+router.get("/complaints/:id", passAuthentication, complaintController.detailComplaint);
 router.put("/complaints/:id/update-status", authentication, complaintController.updateComplaint);
 router.delete("/complaints/:id", authentication, complaintController.deleteComplaint);
 

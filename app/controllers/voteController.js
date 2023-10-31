@@ -69,4 +69,4 @@ async function downvoteComplaint(req, res){
     }
 }
 
-module.exports = { upvoteComplaint, downvoteComplaint}
+module.exports = { upvoteComplaint, downvoteComplaint }

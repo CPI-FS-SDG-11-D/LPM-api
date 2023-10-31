@@ -212,19 +212,11 @@ async function getViralComplaints(req, res) {
 }
 
 const addComplaint = async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({
-      message: "User tidak terautentikasi, Harap login terlebih dahulu",
-    });
-  }
-
   const userID = req.user.userId;
   const { title, description, urlComplaint } = req.body;
 
   if (!title || !description) {
-    return res.status(400).json({
-      message: "Harap isi semua bidang yang diperlukan (title dan description)",
-    });
+    return res.status(400).json({ message: "Harap isi semua bidang yang diperlukan (title dan description)" });
   }
 
   try {
@@ -241,9 +233,7 @@ const addComplaint = async (req, res) => {
     const complaint = new Complaint(complaintData);
     await complaint.save();
 
-    res
-      .status(201)
-      .json({ message: "Complaint added successfully", complaint });
+    res.status(201).json({ message: "Complaint added successfully", complaint });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -252,9 +242,11 @@ const addComplaint = async (req, res) => {
 const detailComplaint = async (req, res) => {
   try {
     const complaint = await Complaint.findOne({ _id: req.params.id });
+
     if (complaint === null) {
       return res.status(404).json({ message: "Complaint NOT Found." });
     }
+
     const user = await User.findOne({ _id: complaint.userID });
     const username = user.username;
     const urlUser = user.urlUser;
@@ -288,10 +280,10 @@ const detailComplaint = async (req, res) => {
       };
 
       responseData.isComplaintOwner = isComplaintOwner;
-      responseData.feedbacks = feedbacks;
+      responseData.feedback = feedbacks;
     } else {
       responseData.isComplaintOwner = false;
-      responseData.feedbacks = {
+      responseData.feedback = {
         is_upvote: false,
         is_downvote: false,
       };
@@ -312,9 +304,7 @@ const updateComplaint = async (req, res) => {
     }
 
     if (complaint.userID.toString() !== req.user.userId) {
-      return res
-        .status(403)
-        .json({ message: "You are not the owner of this complaint" });
+      return res.status(403).json({ message: "You are not the owner of this complaint" });
     }
 
     complaint.status = req.body.status;
@@ -389,23 +379,15 @@ const deleteComplaint = async (req, res) => {
     }
 
     if (complaint.userID.toString() !== req.user.userId) {
-      return res
-        .status(403)
-        .json({ message: "You are not the owner of this complaint" });
+      return res.status(403).json({ message: "You are not the owner of this complaint" });
     }
 
     if (complaint.status !== "pending") {
-      return res
-        .status(403)
-        .json({ message: "You can only delete pending complaints" });
+      return res.status(403).json({ message: "You can only delete pending complaints" });
     }
 
-    // Menghapus aduan
     await Complaint.deleteOne({ _id: complaint._id });
-
-    // Menghapus seluruh dokument "Feedback" yang memiliki complaintID yang sama
     await Feedback.deleteMany({ complaintID: complaint._id });
-
     await session.commitTransaction();
     session.endSession();
 

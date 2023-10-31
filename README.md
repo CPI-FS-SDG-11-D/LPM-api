@@ -527,6 +527,10 @@ curl -X GET URL Patterns
   - Success: (200)
     ```json
     {
+      "feedback": {
+        "is_upvote": Boolean,
+        "is_downvote": Boolean
+      },
       "totalUpvotes": Number
     }
     ```
@@ -552,6 +556,10 @@ curl -X GET URL Patterns
   - Success: (200)
     ```json
     {
+      "feedback": {
+        "is_upvote": Boolean,
+        "is_downvote": Boolean
+      },
       "totalDownvotes": Number
     }
     ```

@@ -52,9 +52,11 @@ docker container start lpm-api
 - Usage:
   ```
   curl -X POST \
-  -d '{ "username": "username",
+  -d '{
+    "username": "username",
     "email": "email", 
-    "password": "password"}' \
+    "password": "password"
+  }' \
   URL_Patterns
   ```
 - Response:
@@ -85,8 +87,10 @@ docker container start lpm-api
 - Usage:
   ```
   curl -X POST \
-  -d '{ "email": "email",
-    "password": "password"}' \
+  -d '{
+    "email": "email",
+    "password": "password"
+  }' \
   URL_Patterns
   ```
 - Response:
@@ -119,9 +123,11 @@ docker container start lpm-api
   ```
   curl -X POST \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
-  -d '{ "oldPassword": "oldPassword",
+  -d '{
+    "oldPassword": "oldPassword",
     "newPassword": "newPassword",
-    "confirmPassword": "confirmPassword"}' \
+    "confirmPassword": "confirmPassword"
+  }' \
   URL_Patterns
   ```
 - Response:
@@ -142,7 +148,6 @@ docker container start lpm-api
 - Method: `GET`
 - URL Patterns: `/api/profile`
 - Authetication: `true`
-- Body: `none`
 - Usage:
   ```
   curl -X GET \
@@ -190,7 +195,7 @@ docker container start lpm-api
   curl -X GET \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
   -H "Content-Type: multipart/form-data" \
-  -d '{ "image": image }' \
+  -d '{ "image": "image" }' \
   URL_Patterns
   ```
 - Response:
@@ -211,7 +216,6 @@ docker container start lpm-api
 - Method: `GET`
 - URL Patterns: `/api/history`
 - Authetication: `true`
-- Body: `none`
 - Usage:
   ```
   curl -X GET \
@@ -231,6 +235,7 @@ docker container start lpm-api
                 "totalDownvotes": Number,
                 "createdAt": Date,
             },
+            //More Complaint...
         ]
     }
     ```
@@ -242,20 +247,16 @@ docker container start lpm-api
     ```
 
 ### 7. Get All Complaints
-
-This endpoint allows you to get a list of all the complaints that have been submitted by the users.
-
 - Method: `GET`
-- URL Patterns: `/api/complaints?page=2&limit=3`
-- Authentication: `true`, but guest user can pass
-- Body: `none`
+- URL Patterns: `/api/complaints?page=1&limit=5`
+- Authentication: `true OR false`
 - Query: `page`, `limit`. Default value are `page=1` and `limit=5` 
 - Usage:
-
-```bash
-curl -X GET URL Patterns
-```
-
+  ```
+  curl -X GET \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
 - Response:
   - Success: (200)
     ```json
@@ -291,25 +292,59 @@ curl -X GET URL Patterns
         "error": "Internal server error" 
     }
     ```
-
-### 8. Add Complaint
+    
+### 8. Get Viral Complaints
+- Method: `GET`
+- URL Patterns: `/api/complaints/viral`
+- Authentication: `true OR false`
+- Usage:
+  ```
+  curl -X GET \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+        "complaints": [
+            {
+                "_id": ObjectId,
+                "title": String,
+                "totalUpvotes": Number,
+            },
+            //More Complaint...
+        ]
+    }
+    ```
+  - Errors: (500)
+    ```json
+    { 
+        "error": "Internal server error" 
+    }
+    ```
+### 9. Add Complaint
 - Method: `POST`
 - URL Patterns: `/api/complaints`
 - Authetication: `true`
-- Params: `none`
 - Body: 
   ```json
   {
-  "title": String,
-  "description": String
-  "urlComplaint": String
+    "title": String,
+    "description": String
+    "urlComplaint": String
   }
   ```
 - Usage:
   ```
   curl -X POST \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  URL_Patterns: /api/complaints/
+  -d '{
+    "title": "title",
+    "description": "description",
+    "urlComplaint": "urlComplaint"
+  }' \
+  URL_Patterns
   ```
 - Response:
   - Success: (201)
@@ -338,7 +373,7 @@ curl -X GET URL Patterns
     }
     ```
 
-### 9. Upload Image Complaint
+### 10. Upload Image Complaint
 - Method: `POST`
 - URL Patterns: `/api/upload-complaint`
 - Authetication: `true`
@@ -359,7 +394,7 @@ curl -X GET URL Patterns
   curl -X GET \
   -H "Authorization: Bearer <ACCESS_TOKEN>"
   -H "Content-Type: multipart/form-data" \
-  -d '{ "image": image }' \
+  -d '{ "image": "image" }' \
   URL_Patterns
   ```
 - Response:
@@ -376,13 +411,17 @@ curl -X GET URL Patterns
     }
     ```
 
-### 10. Search Complaint
+### 11. Search Complaint
 - Method: `GET`
-- URL Patterns: `/api/complaints/search`
-- Authetication: `false`
-- Params: `title`
-- Body: `none`
-- Usage: `none`
+- URL Patterns: `/api/complaints/search?title=`
+- Authetication: `true OR false`
+- Query: `title` 
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
 - Response:
   - Success: (200)
     ```json
@@ -416,13 +455,17 @@ curl -X GET URL Patterns
     }
     ```
 
-### 11. Detail Complaint
+### 12. Detail Complaint
 - Method: `GET`
 - URL Patterns: `/api/complaints/:id`
-- Authetication: `false`
-- Params: `id`
-- Body: `none`
-- Usage: `none`
+- Authetication: `true`
+- Params: `Id complaint`
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
 - Response:
   - Success: (200)
     ```json
@@ -454,22 +497,23 @@ curl -X GET URL Patterns
     }
     ```
 
-### 12. Update Complaint Status
+### 13. Update Complaint Status
 - Method: `PUT`
 - URL Patterns: `/api/complaints/:id/update-status`
 - Authetication: `true`
-- Params: `id`
+- Params: `Id complaint`
 - Body: 
   ```json
   {
-  "status": String ("pending"/"in progress"/"resolved")
+    "status": String ("pending"/"in progress"/"resolved")
   }
   ```
 - Usage:
   ```
   curl -X PUT \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  URL_Patterns: /api/complaints/:id/update-status
+  -d '{ "status": "status" }' \
+  URL_Patterns
   ```
 - Response:
   - Success: (200)
@@ -478,24 +522,23 @@ curl -X GET URL Patterns
       "message": "Complaint updated successfully"
     }
     ```
-  - Errors: (404)
+  - Errors: (500)
     ```json
     {
-      "message": error.message
+      "message": "Internal Server Error"
     }
     ```
 
-### 13. Delete Complaint
+### 14. Delete Complaint
 - Method: `DELETE`
 - URL Patterns: `/api/complaints/:id`
 - Authetication: `true`
-- Params: `id`
-- Body: `none`
+- Params: `Id complaint`
 - Usage:
   ```
   curl -X PUT \
   -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  URL_Patterns: /api/complaints/:id
+  URL_Patterns
   ```
 - Response:
   - Success: (200)
@@ -504,18 +547,18 @@ curl -X GET URL Patterns
       "message": "Complaint deleted successfully"
     }
     ```
-  - Errors: (404)
+  - Errors: (500)
     ```json
     {
-      "message": error.message
+      "message": "Internal Server Error"
     }
     ```
 
-### 14. Upvote Complaint
+### 15. Upvote Complaint
 - Method: `PUT`
-- URL Patterns: `/api/upvote/:complaintID`
+- URL Patterns: `/api/upvote/:id`
 - Authetication: `true`
-- Body: `none`
+- Params: `Id complaint`
 - Usage:
   ```
   curl -X PUT \
@@ -533,18 +576,18 @@ curl -X GET URL Patterns
       "totalUpvotes": Number
     }
     ```
-  - Errors: (409)
+  - Errors: (500)
     ```json
     {
       "message": "User already voted"
     }
     ```
 
-### 15. Downvote Complaint
+### 16. Downvote Complaint
 - Method: `PUT`
-- URL Patterns: `/api/downvote/:complaintID`
+- URL Patterns: `/api/downvote/:id`
 - Authetication: `true`
-- Body: `none`
+- Params: `Id complaint`
 - Usage:
   ```
   curl -X PUT \
@@ -566,37 +609,5 @@ curl -X GET URL Patterns
     ```json
     {
       "message": "User already voted"
-    }
-    ```
-### 16. Get Viral Complaints
-
-- Method: `GET`
-- URL Patterns: `/api/complaints/viral
-- Authentication: `false`
-- Body: `none`
-- Usage:
-
-```bash
-curl -X GET URL Patterns
-```
-
-- Response:
-  - Success: (200)
-    ```json
-    {
-        "complaints": [
-            {
-                "_id": ObjectId,
-                "title": String,
-                "totalUpvotes": Number,
-            },
-            // more viral complaints ...
-        ]
-    }
-    ```
-  - Errors: (500)
-    ```json
-    { 
-        "error": "Internal server error" 
     }
     ```

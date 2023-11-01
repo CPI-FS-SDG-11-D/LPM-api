@@ -415,7 +415,7 @@ docker container start lpm-api
 - Method: `GET`
 - URL Patterns: `/api/complaints/search?title=`
 - Authetication: `true OR false`
-- Query: `title` 
+- Query: `title complaint` 
 - Usage:
   ```
   curl -X PUT \
@@ -458,8 +458,8 @@ docker container start lpm-api
 ### 12. Detail Complaint
 - Method: `GET`
 - URL Patterns: `/api/complaints/:id`
-- Authetication: `true`
-- Params: `Id complaint`
+- Authetication: `true OR false`
+- Params: `id complaint`
 - Usage:
   ```
   curl -X PUT \
@@ -501,7 +501,7 @@ docker container start lpm-api
 - Method: `PUT`
 - URL Patterns: `/api/complaints/:id/update-status`
 - Authetication: `true`
-- Params: `Id complaint`
+- Params: `id complaint`
 - Body: 
   ```json
   {
@@ -533,7 +533,7 @@ docker container start lpm-api
 - Method: `DELETE`
 - URL Patterns: `/api/complaints/:id`
 - Authetication: `true`
-- Params: `Id complaint`
+- Params: `id complaint`
 - Usage:
   ```
   curl -X PUT \
@@ -558,7 +558,7 @@ docker container start lpm-api
 - Method: `PUT`
 - URL Patterns: `/api/upvote/:id`
 - Authetication: `true`
-- Params: `Id complaint`
+- Params: `id complaint`
 - Usage:
   ```
   curl -X PUT \
@@ -587,7 +587,7 @@ docker container start lpm-api
 - Method: `PUT`
 - URL Patterns: `/api/downvote/:id`
 - Authetication: `true`
-- Params: `Id complaint`
+- Params: `id complaint`
 - Usage:
   ```
   curl -X PUT \

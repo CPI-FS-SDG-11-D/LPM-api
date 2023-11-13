@@ -44,7 +44,10 @@ async function getComplaints(req, res) {
         $unwind: "$user",
       },
       {
-        $unwind: "$feedbacks",
+        $unwind: {
+          path: "$feedbacks",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       // tahap ketiga: group berdasarkan _id complaint
       {

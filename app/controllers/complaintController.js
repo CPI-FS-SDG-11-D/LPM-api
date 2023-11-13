@@ -41,7 +41,10 @@ async function getComplaints(req, res) {
       },
       // tahap kedua: unwind user dan feedbacks
       {
-        $unwind: "$user",
+        $unwind: {
+          path: "$user",
+          preserveNullAndEmptyArrays: true,
+        },
       },
       {
         $unwind: {
@@ -120,8 +123,20 @@ async function getComplaints(req, res) {
           },
           // feedbacks: "$feedbacks",
           feedback: {
-            is_upvote: { $eq: ["$feedback", "upvote"] },
-            is_downvote: { $eq: ["$feedback", "downvote"] },
+            is_upvote: {
+              $cond: {
+                if: { $and: [{ $ne: [{ $arrayElemAt: ["$feedbacks", 0] }, {}] }, { $eq: ["$feedback", "upvote"] }] },
+                then: true,
+                else: false
+              }
+            },
+            is_downvote: {
+              $cond: {
+                if: { $and: [{ $ne: [{ $arrayElemAt: ["$feedbacks", 0] }, {}] }, { $eq: ["$feedback", "downvote"] }] },
+                then: true,
+                else: false
+              }
+            }
           },
         },
       },

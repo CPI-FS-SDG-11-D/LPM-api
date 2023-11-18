@@ -7,14 +7,15 @@ const accessToken = process.env.SECRET_TOKEN;
 
 async function registerUser(req, res){
     const { username, email, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10); // Encrypt password
-    const existingUser = await User.findOne({ email }); // Find user email in database
-
-    if (existingUser) {
-        return res.status(401).json({ message: 'Email is already registered' });
-    }
 
     try {
+        const hashedPassword = await bcrypt.hash(password, 10); // Encrypt password
+        const user = await User.findOne({ email }); // Find user in database
+
+        if (user) {
+            return res.status(401).json({ message: 'Email is already registered' });
+        }
+
         const newUser = new User({ username: username, email: email, password: hashedPassword })
         await newUser.save();
 
@@ -39,7 +40,6 @@ async function loginUser(req, res){
         } else {
             const token = jwt.sign({ userId : user[0]._id }, accessToken, {expiresIn: '24h'}); // Generate JWT Token
 
-
             res.status(200).json({ token: token });
         }
     } catch (err) {
@@ -51,20 +51,17 @@ async function loginUser(req, res){
 async function updatePasswordUser(req, res){
     const reqUser = req.user;
     const { oldPassword, newPassword, confirmPassword } = req.body;
-    const hashedNewPassword = await bcrypt.hash(newPassword, 10); // Encrypt password
-    const user = await User.find({ _id: reqUser.userId }, 'password'); // Find user in database
-    const isPasswordValid = await bcrypt.compare(oldPassword, user[0].password); // Match password
-
-    if(newPassword != confirmPassword){
-        res.status(401).json({ message: 'Password not match' });
-    }
-
-    if(!isPasswordValid) {
-        res.status(401).json({ message: 'Password not match' });
-    }
 
     try {
-        await User.findByIdAndUpdate(reqUser.userId, { password: hashedNewPassword }, { new: true, runValidators: true }); // Update password user
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10); // Encrypt password
+        const user = await User.find({ _id: reqUser.userId }, 'password'); // Find user in database
+        const isPasswordValid = await bcrypt.compare(oldPassword, user[0].password); // Match password
+
+        if(newPassword != confirmPassword || !isPasswordValid){
+            res.status(401).json({ message: 'Password not match' });
+        }
+
+        await User.findByIdAndUpdate(reqUser.userId, { password: hashedNewPassword }, { new: true, runValidators: true });
 
         res.status(200).json({ message: 'Password successfully updated' });
     } catch (err) {

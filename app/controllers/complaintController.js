@@ -216,7 +216,7 @@ const addComplaint = async (req, res) => {
   const { title, description, urlComplaint } = req.body;
 
   if (!title || !description) {
-    return res.status(400).json({ message: "Harap isi semua bidang yang diperlukan (title dan description)" });
+    return res.status(400).json({ message: "Fill the blank" });
   }
 
   try {
@@ -233,19 +233,17 @@ const addComplaint = async (req, res) => {
     const complaint = new Complaint(complaintData);
     await complaint.save();
 
-    res.status(201).json({ message: "Complaint added successfully", complaint });
+    res.status(201).json({ message: "Complaint added successfully" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: 'Internal server error' });
   }
 };
 
 const detailComplaint = async (req, res) => {
-  try {
-    const complaint = await Complaint.findOne({ _id: req.params.id });
+  const reqComplaint = req.params;
 
-    if (complaint === null) {
-      return res.status(404).json({ message: "Complaint NOT Found." });
-    }
+  try {
+    const complaint = await Complaint.findOne({ _id: reqComplaint.id });
 
     const user = await User.findOne({ _id: complaint.userID });
     const username = user.username;
@@ -291,43 +289,39 @@ const detailComplaint = async (req, res) => {
 
     res.status(200).json(responseData);
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(404).json({ message: "Complaint not found" });
   }
 };
 
 const updateComplaint = async (req, res) => {
+  const reqUser = req.user;
+  const reqComplaint = req.params;
+  const reqStatus = req.body;
+
   try {
-    const complaint = await Complaint.findOne({ _id: req.params.id });
+    const complaint = await Complaint.findOne({ _id: reqComplaint.id });
 
-    if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
+    if (complaint.userID.toString() !== reqUser.userId) {
+      return res.status(403).json({ message: "Unauthorize" });
     }
 
-    if (complaint.userID.toString() !== req.user.userId) {
-      return res.status(403).json({ message: "You are not the owner of this complaint" });
-    }
-
-    complaint.status = req.body.status;
+    complaint.status = reqStatus.status;
     await complaint.save();
 
     res.status(200).json({ message: "Complaint updated successfully" });
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(404).json({ message: "Complaint not found" });
   }
 };
 
 const searchComplaint = async (req, res) => {
-  try {
-    const searchTerm = req.query.title;
-    const regexPattern = new RegExp(`\\b.*${searchTerm}.*\\b`, "i");
+  const searchTerm = req.query.title;
+  const regexPattern = new RegExp(`\\b.*${searchTerm}.*\\b`, "i");
 
+  try {
     const complaints = await Complaint.find({
       title: { $regex: regexPattern },
     });
-
-    if (complaints.length === 0) {
-      return res.status(404).json({ message: "Complaints NOT Found." });
-    }
 
     const responseData = [];
 
@@ -363,31 +357,29 @@ const searchComplaint = async (req, res) => {
 
     res.status(200).json(responseData);
   } catch (error) {
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(404).json({ message: "Complaint not found" });
   }
 };
 
 const deleteComplaint = async (req, res) => {
+  const reqUser = req.user;
+  const reqComplaint = req.params;
+
   const session = await Complaint.startSession();
   session.startTransaction();
 
   try {
-    const complaint = await Complaint.findOne({ _id: req.params.id });
-
-    if (!complaint) {
-      return res.status(404).json({ message: "Complaint not found" });
-    }
-
-    if (complaint.userID.toString() !== req.user.userId) {
-      return res.status(403).json({ message: "You are not the owner of this complaint" });
-    }
+    const complaint = await Complaint.findOne({ _id: reqComplaint.id });
 
     if (complaint.status !== "pending") {
       return res.status(403).json({ message: "You can only delete pending complaints" });
+    } else if (complaint.userID.toString() !== reqUser.userId) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
 
     await Complaint.deleteOne({ _id: complaint._id });
     await Feedback.deleteMany({ complaintID: complaint._id });
+
     await session.commitTransaction();
     session.endSession();
 
@@ -396,7 +388,7 @@ const deleteComplaint = async (req, res) => {
     await session.abortTransaction();
     session.endSession();
 
-    res.status(500).json({ message: "Internal Server Error" });
+    return res.status(404).json({ message: "Complaint not found" });
   }
 };
 

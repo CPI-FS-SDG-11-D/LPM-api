@@ -19,7 +19,7 @@ async function profileUser(req, res){
 async function historyUser(req, res){
     const reqUser = req.user;
 
-    try {  
+    try {
         const complaints = await Complaint.find({ userID: reqUser.userId }, 'title status totalUpvotes totalDownvotes createdAt').sort({ createdAt: -1 });
 
         res.status(200).json({ complaints: complaints });

@@ -17,10 +17,10 @@ example: router.get('/profile', **passAuthentication**, userController.profileUs
 */
 
 router.post("/complaints", authentication, complaintController.addComplaint);
-router.get("/complaints", passAuthentication, complaintController.getComplaints);
-router.get("/complaints/viral", passAuthentication, complaintController.getViralComplaints);
-router.get("/complaints/search", passAuthentication, complaintController.searchComplaint);
-router.get("/complaints/:id", passAuthentication, complaintController.detailComplaint);
+router.get("/complaints", passAuthentication, complaintController.getComplaint);
+router.get("/complaints/viral", passAuthentication, complaintController.getComplaintViral);
+router.get("/complaints/search", passAuthentication, complaintController.getComplaintByTitle);
+router.get("/complaints/:id", passAuthentication, complaintController.getComplaintById);
 router.put("/complaints/:id/update-status", authentication, complaintController.updateComplaint);
 router.delete("/complaints/:id", authentication, complaintController.deleteComplaint);
 

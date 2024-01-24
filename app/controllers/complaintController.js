@@ -30,7 +30,7 @@ async function addComplaint(req, res){
     }
 };
 
-async function getComplaints(req, res) {
+async function getComplaint(req, res) {
     const reqUser = req.user;
     const page = req.query.page || 1;
     const limit = req.query.limit || 20;
@@ -74,7 +74,7 @@ async function getComplaints(req, res) {
     }
 }
 
-async function getViralComplaints(req, res) {
+async function getComplaintViral(req, res) {
     try {
         const complaints = await Complaint.find().select('title totalUpvotes').sort({ totalUpvotes: -1 }).limit(4);
 
@@ -85,7 +85,7 @@ async function getViralComplaints(req, res) {
     }
 }
 
-async function detailComplaint(req, res) {
+async function getComplaintById(req, res) {
     const reqUser = req.user;
     const reqComplaint = req.params;
 
@@ -120,7 +120,7 @@ async function detailComplaint(req, res) {
     }
 };
 
-async function searchComplaint(req, res){
+async function getComplaintByTitle(req, res){
     const reqUser = req.user;
     const searchTerm = req.query.title;
     const regexPattern = new RegExp(`\\b.*${searchTerm}.*\\b`, "i");
@@ -208,11 +208,11 @@ async function deleteComplaint(req, res){
 };
 
 module.exports = {
-    getComplaints,
-    getViralComplaints,
-    detailComplaint,
-    searchComplaint,
     addComplaint,
+    getComplaint,
+    getComplaintViral,
+    getComplaintById,
+    getComplaintByTitle,
     updateComplaint,
     deleteComplaint,
 };

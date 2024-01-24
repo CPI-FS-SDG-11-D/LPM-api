@@ -145,69 +145,12 @@ async function getComplaints(req, res) {
 
 async function getViralComplaints(req, res) {
   try {
-    // Define the sorting options
-    const sortByTotalUpvotes = -1; // Sort by totalUpvotes in descending order (highest first)
+    const complaints = await Complaint.find().select('title totalUpvotes').sort({ totalUpvotes: -1 }).limit(4);
 
-    const virals = await Complaint.aggregate([
-      // tahap pertama: lookup user dan feedback
-      {
-        $lookup: {
-          from: "users",
-          localField: "userID",
-          foreignField: "_id",
-          as: "user",
-        },
-      },
-      {
-        $lookup: {
-          from: "feedbacks",
-          localField: "_id",
-          foreignField: "complaintID",
-          as: "feedbacks",
-        },
-      },
-      // tahap kedua: unwind user dan feedbacks
-      {
-        $unwind: "$user",
-      },
-      {
-        $unwind: "$feedbacks",
-      },
-      // tahap ketiga: group berdasarkan _id complaint
-      {
-        $group: {
-          _id: "$_id",
-          title: { $first: "$title" },
-          // hitung total is_upvote
-          totalUpvotes: { $first: "$totalUpvotes" },
-        },
-      },
-      // tahap keempat: project field-field yang ingin ditampilkan
-      {
-        $project: {
-          _id: 1,
-          title: 1,
-          totalUpvotes: 1,
-        },
-      },
-      {
-        $sort: {
-          totalUpvotes: sortByTotalUpvotes, // Sort by totalUpvotes
-        },
-      },
-      // tahap kelimat: limit agar hanya mengeluarkan 4
-      {
-        $limit: 4,
-      },
-    ]);
-
-    // Send the viral complaints as a response
-    res.status(200).json({ virals: virals });
+    res.status(200).json({ complaints: complaints });
   } catch (err) {
-    console.error("Error Viral Complaint :", err);
-
-    // Handle any errors
-    res.status(500).json({ error: "Internal server error" });
+    console.error('Error get complaints:', err);
+    res.status(404).json({ message: 'Complaints not found' });
   }
 }
 
@@ -240,52 +183,33 @@ const addComplaint = async (req, res) => {
 };
 
 const detailComplaint = async (req, res) => {
+  const reqUser = req.user;
   const reqComplaint = req.params;
 
   try {
     const complaint = await Complaint.findOne({ _id: reqComplaint.id });
-
     const user = await User.findOne({ _id: complaint.userID });
-    const username = user.username;
-    const urlUser = user.urlUser;
+    const feedback = await Feedback.findOne({ complaintID: reqComplaint.id, userID: reqUser ? reqUser.userId : null });
 
-    const responseData = { username, urlUser };
-
-    const formattedComplaint = {
-      _id: complaint._id,
-      userID: complaint.userID,
-      title: complaint.title,
-      description: complaint.description,
-      status: complaint.status,
-      totalUpvotes: complaint.totalUpvotes,
-      totalDownvotes: complaint.totalDownvotes,
-      createdAt: complaint.createdAt,
-      urlComplaint: complaint.urlComplaint || null,
-    };
-
-    responseData.complaint = formattedComplaint;
-
-    if (req.user) {
-      const isComplaintOwner = req.user.userId == complaint.userID;
-      const feedback = await Feedback.findOne({
-        complaintID: req.params.id,
-        userID: req.user.userId,
-      });
-
-      const feedbacks = {
+    const responseData = {
+      username: user.username,
+      urlUser: user.urlUser,
+      complaint: {
+        _id: complaint._id,
+        userID: complaint.userID._id,
+        title: complaint.title,
+        description: complaint.description,
+        status: complaint.status,
+        totalUpvotes: complaint.totalUpvotes,
+        totalDownvotes: complaint.totalDownvotes,
+        createdAt: complaint.createdAt,
+        urlComplaint: complaint.urlComplaint || null,
+      },
+      feedback: {
         is_upvote: feedback ? feedback.is_upvote : false,
         is_downvote: feedback ? feedback.is_downvote : false,
-      };
-
-      responseData.isComplaintOwner = isComplaintOwner;
-      responseData.feedback = feedbacks;
-    } else {
-      responseData.isComplaintOwner = false;
-      responseData.feedback = {
-        is_upvote: false,
-        is_downvote: false,
-      };
-    }
+      },
+  };
 
     res.status(200).json(responseData);
   } catch (error) {
@@ -317,37 +241,33 @@ const updateComplaint = async (req, res) => {
 const searchComplaint = async (req, res) => {
   const searchTerm = req.query.title;
   const regexPattern = new RegExp(`\\b.*${searchTerm}.*\\b`, "i");
+  const responseData = [];
 
   try {
-    const complaints = await Complaint.find({
-      title: { $regex: regexPattern },
-    });
+    const complaints = await Complaint.find({title: { $regex: regexPattern }});
 
-    const responseData = [];
+    if (complaints.length === 0) {
+      return res.status(404).json({ message: "Complaints not found." });
+    }
 
     for (const complaint of complaints) {
       const user = await User.findOne({ _id: complaint.userID });
-      const feedback = await Feedback.findOne({
-        complaintID: complaint._id,
-        userID: req.user ? req.user.userId : null,
-      });
-
-      const formattedComplaint = {
-        _id: complaint._id,
-        userID: complaint.userID,
-        title: complaint.title,
-        description: complaint.description,
-        status: complaint.status,
-        totalUpvotes: complaint.totalUpvotes,
-        totalDownvotes: complaint.totalDownvotes,
-        createdAt: complaint.createdAt,
-        urlComplaint: complaint.urlComplaint || null,
-      };
+      const feedback = await Feedback.findOne({ complaintID: complaint._id, userID: req.user ? req.user.userId : null });
 
       responseData.push({
         username: user.username,
         urlUser: user.urlUser,
-        complaint: formattedComplaint,
+        complaint: {
+          _id: complaint._id,
+          userID: complaint.userID,
+          title: complaint.title,
+          description: complaint.description,
+          status: complaint.status,
+          totalUpvotes: complaint.totalUpvotes,
+          totalDownvotes: complaint.totalDownvotes,
+          createdAt: complaint.createdAt,
+          urlComplaint: complaint.urlComplaint || null,
+        },
         feedback: {
           is_upvote: feedback ? feedback.is_upvote : false,
           is_downvote: feedback ? feedback.is_downvote : false,
@@ -357,7 +277,7 @@ const searchComplaint = async (req, res) => {
 
     res.status(200).json(responseData);
   } catch (error) {
-    return res.status(404).json({ message: "Complaint not found" });
+    res.status(500).json({ message: "Internal Server Error" });
   }
 };
 

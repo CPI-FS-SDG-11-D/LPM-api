@@ -37,6 +37,8 @@ docker container start lpm-api
 - Merge your branch into main
 
 ## API Documentation
+- Base URL: `https://lpm-api.glitch.me`
+
 ### 1. Register User
 - Method: `POST`
 - URL Patterns: `/api/register`
@@ -429,7 +431,7 @@ docker container start lpm-api
       {
       "username": String,
       "urlUser": String,
-      "complaint": {
+      "complaints": {
           "_id": ObjectId,
           "userID": ObjectId,
           "title": String,
@@ -472,7 +474,7 @@ docker container start lpm-api
     {
       "username": String,
       "urlUser": String,
-      "complaint": {
+      "complaints": {
           "_id": ObjectId,
           "userID": ObjectId,
           "title": String,

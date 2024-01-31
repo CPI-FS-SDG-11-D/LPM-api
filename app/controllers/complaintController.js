@@ -50,7 +50,7 @@ async function getComplaint(req, res) {
             response.push({
                 username: user.username,
                 urlUser: user.urlUser,
-                complaint: {
+                complaints: {
                     _id: complaint._id,
                     userID: complaint.userID,
                     title: complaint.title,
@@ -97,7 +97,7 @@ async function getComplaintById(req, res) {
         const response = {
             username: user.username,
             urlUser: user.urlUser,
-            complaint: {
+            complaints: {
                 _id: complaint._id,
                 userID: complaint.userID._id,
                 title: complaint.title,
@@ -140,7 +140,7 @@ async function getComplaintByTitle(req, res){
             response.push({
                 username: user.username,
                 urlUser: user.urlUser,
-                complaint: {
+                complaints: {
                     _id: complaint._id,
                     userID: complaint.userID,
                     title: complaint.title,

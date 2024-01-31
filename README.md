@@ -38,11 +38,16 @@ docker container start lpm-api
 - Merge your branch into main
 
 ## API Documentation
-- Base URL: `https://lpm-api.glitch.me`
+### Version 1
+- Base URL: `https://lpm-api.glitch.me/api`
+- Documentation: `https://github.com/CPI-FS-SDG-11-D/LPM-api/tree/e49c6c5b343aa2949a6f96c532286da5ddb0ec0f`
+  
+### Version 2
+- Base URL: `https://lpm-api-v2.glitch.me/api-v2`
 
 ### 1. Register User
 - Method: `POST`
-- URL Patterns: `/api/register`
+- URL Patterns: `{{base_url}}/register`
 - Authetication: `false`
 - Body:
   ```json
@@ -78,7 +83,7 @@ docker container start lpm-api
 
 ### 2. Login User
 - Method: `POST`
-- URL Patterns: `/api/login`
+- URL Patterns: `{{base_url}}/login`
 - Authetication: `false`
 - Body:
   ```json
@@ -112,7 +117,7 @@ docker container start lpm-api
 
 ### 3. Update Password User
 - Method: `POST`
-- URL Patterns: `/api/update-password`
+- URL Patterns: `{{base_url}}/update-password`
 - Authetication: `true`
 - Body:
   ```json
@@ -149,7 +154,7 @@ docker container start lpm-api
 
 ### 4. Profile User
 - Method: `GET`
-- URL Patterns: `/api/profile`
+- URL Patterns: `{{base_url}}/profile`
 - Authetication: `true`
 - Usage:
   ```
@@ -179,7 +184,7 @@ docker container start lpm-api
     
 ### 5. Upload Profile Image User
 - Method: `POST`
-- URL Patterns: `/api/upload-user`
+- URL Patterns: `{{base_url}}/upload-user`
 - Authetication: `true`
 - Headers:
   ``` json
@@ -217,7 +222,7 @@ docker container start lpm-api
 
 ### 6. History Complaints User
 - Method: `GET`
-- URL Patterns: `/api/history`
+- URL Patterns: `{{base_url}}/history`
 - Authetication: `true`
 - Usage:
   ```
@@ -251,9 +256,9 @@ docker container start lpm-api
 
 ### 7. Get All Complaints
 - Method: `GET`
-- URL Patterns: `/api/complaints?page={page}&limit={limit}`
+- URL Patterns: `{{base_url}}/complaints?page={page}&limit={limit}&title={title}`
 - Authentication: `true OR false`
-- Params: `page`, `limit`. Default value are `page=1` and `limit=10` 
+- Params: `page`, `limit`, `title`, default value are `page=1`, `limit=10` 
 - Usage:
   ```
   curl -X GET \
@@ -294,13 +299,12 @@ docker container start lpm-api
     { 
         "error": "Internal server error" 
     }
-    ```
-    
-### 8. Search Complaint
+    ```    
+
+### 8. Detail Complaint
 - Method: `GET`
-- URL Patterns: `/api/complaints/search?title={title}`
+- URL Patterns: `{{base_url}}/complaints/{id}`
 - Authetication: `true OR false`
-- Params: `title complaint` 
 - Usage:
   ```
   curl -X PUT \
@@ -310,8 +314,7 @@ docker container start lpm-api
 - Response:
   - Success: (200)
     ```json
-    [
-      {
+    {
       "username": String,
       "urlUser": String,
       "complaint": {
@@ -329,49 +332,7 @@ docker container start lpm-api
           "is_upvote": Boolean,
           "is_downvote": Boolean
         }
-      },
-      //More Complaint...
-    ]
-    ```
-  - Errors: (404)
-    ```json
-    {
-      "message": "Complaints NOT Found."
-    }
-    ```
-
-### 9. Detail Complaint
-- Method: `GET`
-- URL Patterns: `/api/complaints/{id}`
-- Authetication: `true OR false`
-- Usage:
-  ```
-  curl -X PUT \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  URL_Patterns
-  ```
-- Response:
-  - Success: (200)
-    ```json
-    {
-      "username": String,
-      "urlUser": String,
-      "complaint": {
-          "_id": ObjectId,
-          "userID": ObjectId,
-          "title": String,
-          "description": String,
-          "status": String,
-          "totalUpvotes": Number,
-          "totalDownvotes": Number,
-          "createdAt": Timestamps,
-          "urlComplaint": String,
-        },
       "isComplaintOwner": Boolean,
-      "feedback": {
-          "is_upvote": Boolean,
-          "is_downvote": Boolean
-        }
     }
     ```
   - Errors: (404)
@@ -381,9 +342,9 @@ docker container start lpm-api
     }
     ```
 
-### 10. Get Viral Complaints
+### 9. Get Viral Complaints
 - Method: `GET`
-- URL Patterns: `/api/complaints/viral`
+- URL Patterns: `{{base_url}}/complaints/viral`
 - Authentication: `false`
 - Usage:
   ```
@@ -412,9 +373,9 @@ docker container start lpm-api
     }
     ```
     
-### 11. Add Complaint
+### 10. Add Complaint
 - Method: `POST`
-- URL Patterns: `/api/complaints`
+- URL Patterns: `{{base_url}}/complaints`
 - Authetication: `true`
 - Body: 
   ```json
@@ -462,9 +423,9 @@ docker container start lpm-api
     }
     ```
 
-### 12. Upload Image Complaint
+### 11. Upload Image Complaint
 - Method: `POST`
-- URL Patterns: `/api/upload-complaint`
+- URL Patterns: `{{base_url}}/upload-complaint`
 - Authetication: `true`
 - Headers:
   ``` json
@@ -500,9 +461,9 @@ docker container start lpm-api
     }
     ```
 
-### 13. Update Complaint Status
+### 12. Update Complaint Status
 - Method: `PUT`
-- URL Patterns: `/api/complaints/{id}/update-status`
+- URL Patterns: `{{base_url}}/complaints/update-status/{id}`
 - Authetication: `true`
 - Body: 
   ```json
@@ -531,9 +492,9 @@ docker container start lpm-api
     }
     ```
 
-### 14. Delete Complaint
+### 13. Delete Complaint
 - Method: `DELETE`
-- URL Patterns: `/api/complaints/{id}`
+- URL Patterns: `{{base_url}}/complaints/{id}`
 - Authetication: `true`
 - Usage:
   ```
@@ -555,9 +516,9 @@ docker container start lpm-api
     }
     ```
 
-### 15. Upvote Complaint
+### 14. Upvote Complaint
 - Method: `PUT`
-- URL Patterns: `/api/upvote/{id}`
+- URL Patterns: `{{base_url}}/upvote/{id}`
 - Authetication: `true`
 - Usage:
   ```
@@ -583,9 +544,9 @@ docker container start lpm-api
     }
     ```
 
-### 16. Downvote Complaint
+### 15. Downvote Complaint
 - Method: `PUT`
-- URL Patterns: `/api/downvote/{id}`
+- URL Patterns: `{{base_url}}/downvote/{id}`
 - Authetication: `true`
 - Usage:
   ```

@@ -42,7 +42,7 @@ docker container start lpm-api
 - Documentation: `https://github.com/CPI-FS-SDG-11-D/LPM-api/tree/e49c6c5b343aa2949a6f96c532286da5ddb0ec0f`
   
 ### Version 2
-- Base URL: `https://lpm-api.glitch.me/api-v2`
+- Base URL: `https://lpm-api-v2.glitch.me/api-v2`
 
 ### 1. Register User
 - Method: `POST`

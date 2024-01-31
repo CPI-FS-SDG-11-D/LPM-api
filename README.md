@@ -250,9 +250,9 @@ docker container start lpm-api
 
 ### 7. Get All Complaints
 - Method: `GET`
-- URL Patterns: `/api/complaints?page=1&limit=5`
+- URL Patterns: `/api/complaints?page={page}&limit={limit}`
 - Authentication: `true OR false`
-- Query: `page`, `limit`. Default value are `page=1` and `limit=5` 
+- Params: `page`, `limit`. Default value are `page=1` and `limit=20` 
 - Usage:
   ```
   curl -X GET \
@@ -295,10 +295,95 @@ docker container start lpm-api
     }
     ```
     
-### 8. Get Viral Complaints
+### 8. Search Complaint
+- Method: `GET`
+- URL Patterns: `/api/complaints/search?title={title}`
+- Authetication: `true OR false`
+- Params: `title complaint` 
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    [
+      {
+      "username": String,
+      "urlUser": String,
+      "complaint": {
+          "_id": ObjectId,
+          "userID": ObjectId,
+          "title": String,
+          "description": String,
+          "status": String,
+          "totalUpvotes": Number,
+          "totalDownvotes": Number,
+          "createdAt": Timestamps,
+          "urlComplaint": String,
+        },
+      "feedback": {
+          "is_upvote": Boolean,
+          "is_downvote": Boolean
+        }
+      },
+      //More Complaint...
+    ]
+    ```
+  - Errors: (404)
+    ```json
+    {
+      "message": "Complaints NOT Found."
+    }
+    ```
+
+### 9. Detail Complaint
+- Method: `GET`
+- URL Patterns: `/api/complaints/{id}`
+- Authetication: `true OR false`
+- Usage:
+  ```
+  curl -X PUT \
+  -H "Authorization: Bearer <ACCESS_TOKEN>" \
+  URL_Patterns
+  ```
+- Response:
+  - Success: (200)
+    ```json
+    {
+      "username": String,
+      "urlUser": String,
+      "complaint": {
+          "_id": ObjectId,
+          "userID": ObjectId,
+          "title": String,
+          "description": String,
+          "status": String,
+          "totalUpvotes": Number,
+          "totalDownvotes": Number,
+          "createdAt": Timestamps,
+          "urlComplaint": String,
+        },
+      "isComplaintOwner": Boolean,
+      "feedback": {
+          "is_upvote": Boolean,
+          "is_downvote": Boolean
+        }
+    }
+    ```
+  - Errors: (404)
+    ```json
+    {
+      "message": "Complaints NOT Found."
+    }
+    ```
+
+### 10. Get Viral Complaints
 - Method: `GET`
 - URL Patterns: `/api/complaints/viral`
-- Authentication: `true OR false`
+- Authentication: `false`
 - Usage:
   ```
   curl -X GET \
@@ -325,7 +410,8 @@ docker container start lpm-api
         "error": "Internal server error" 
     }
     ```
-### 9. Add Complaint
+    
+### 11. Add Complaint
 - Method: `POST`
 - URL Patterns: `/api/complaints`
 - Authetication: `true`
@@ -375,7 +461,7 @@ docker container start lpm-api
     }
     ```
 
-### 10. Upload Image Complaint
+### 12. Upload Image Complaint
 - Method: `POST`
 - URL Patterns: `/api/upload-complaint`
 - Authetication: `true`
@@ -413,97 +499,10 @@ docker container start lpm-api
     }
     ```
 
-### 11. Search Complaint
-- Method: `GET`
-- URL Patterns: `/api/complaints/search?title=`
-- Authetication: `true OR false`
-- Query: `title complaint` 
-- Usage:
-  ```
-  curl -X PUT \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  URL_Patterns
-  ```
-- Response:
-  - Success: (200)
-    ```json
-    [
-      {
-      "username": String,
-      "urlUser": String,
-      "complaints": {
-          "_id": ObjectId,
-          "userID": ObjectId,
-          "title": String,
-          "description": String,
-          "status": String,
-          "totalUpvotes": Number,
-          "totalDownvotes": Number,
-          "createdAt": Timestamps,
-          "urlComplaint": String,
-        },
-      "feedback": {
-          "is_upvote": Boolean,
-          "is_downvote": Boolean
-        }
-      },
-      //More Complaint...
-    ]
-    ```
-  - Errors: (404)
-    ```json
-    {
-      "message": "Complaints NOT Found."
-    }
-    ```
-
-### 12. Detail Complaint
-- Method: `GET`
-- URL Patterns: `/api/complaints/:id`
-- Authetication: `true OR false`
-- Params: `id complaint`
-- Usage:
-  ```
-  curl -X PUT \
-  -H "Authorization: Bearer <ACCESS_TOKEN>" \
-  URL_Patterns
-  ```
-- Response:
-  - Success: (200)
-    ```json
-    {
-      "username": String,
-      "urlUser": String,
-      "complaints": {
-          "_id": ObjectId,
-          "userID": ObjectId,
-          "title": String,
-          "description": String,
-          "status": String,
-          "totalUpvotes": Number,
-          "totalDownvotes": Number,
-          "createdAt": Timestamps,
-          "urlComplaint": String,
-        },
-      "isComplaintOwner": Boolean,
-      "feedback": {
-          "is_upvote": Boolean,
-          "is_downvote": Boolean
-        }
-    }
-    ```
-  - Errors: (404)
-    ```json
-    {
-      "message": "Complaints NOT Found."
-    }
-    ```
-
 ### 13. Update Complaint Status
 - Method: `PUT`
-- URL Patterns: `/api/complaints/:id/update-status`
+- URL Patterns: `/api/complaints/{id}/update-status`
 - Authetication: `true`
-- Params: `id complaint`
 - Body: 
   ```json
   {
@@ -533,9 +532,8 @@ docker container start lpm-api
 
 ### 14. Delete Complaint
 - Method: `DELETE`
-- URL Patterns: `/api/complaints/:id`
+- URL Patterns: `/api/complaints/{id}`
 - Authetication: `true`
-- Params: `id complaint`
 - Usage:
   ```
   curl -X PUT \
@@ -558,9 +556,8 @@ docker container start lpm-api
 
 ### 15. Upvote Complaint
 - Method: `PUT`
-- URL Patterns: `/api/upvote/:id`
+- URL Patterns: `/api/upvote/{id}`
 - Authetication: `true`
-- Params: `id complaint`
 - Usage:
   ```
   curl -X PUT \
@@ -587,9 +584,8 @@ docker container start lpm-api
 
 ### 16. Downvote Complaint
 - Method: `PUT`
-- URL Patterns: `/api/downvote/:id`
+- URL Patterns: `/api/downvote/{id}`
 - Authetication: `true`
-- Params: `id complaint`
 - Usage:
   ```
   curl -X PUT \

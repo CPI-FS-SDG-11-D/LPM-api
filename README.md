@@ -122,8 +122,8 @@ docker container start lpm-api
 - Body:
   ```json
   {
-    "oldPassword": String
-    "newPassword": String
+    "oldPassword": String,
+    "newPassword": String,
     "confirmPassword": String
   }
   ```

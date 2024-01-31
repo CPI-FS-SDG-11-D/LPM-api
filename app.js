@@ -22,11 +22,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(morgan('combined'));
 
 // List API
-app.use('/api', cors(), authRoutes);
-app.use('/api', cors(), userRoutes);
-app.use('/api', cors(), complaintRoutes);
-app.use('/api', cors(), voteRoutes);
-app.use('/api', cors(), uploadImageRoutes);
+app.use('/api-v2', cors(), authRoutes);
+app.use('/api-v2', cors(), userRoutes);
+app.use('/api-v2', cors(), complaintRoutes);
+app.use('/api-v2', cors(), voteRoutes);
+app.use('/api-v2', cors(), uploadImageRoutes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`)

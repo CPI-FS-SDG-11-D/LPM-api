@@ -16,6 +16,7 @@ npx dotenv-vault@latest pull
 ```
 npm run start
 ```
+
 ## How to setup container in docker:
 - Run this command to build images:
 ```
@@ -252,7 +253,7 @@ docker container start lpm-api
 - Method: `GET`
 - URL Patterns: `/api/complaints?page={page}&limit={limit}`
 - Authentication: `true OR false`
-- Params: `page`, `limit`. Default value are `page=1` and `limit=20` 
+- Params: `page`, `limit`. Default value are `page=1` and `limit=10` 
 - Usage:
   ```
   curl -X GET \
@@ -394,7 +395,7 @@ docker container start lpm-api
   - Success: (200)
     ```json
     {
-        "complaints": [
+        "virals": [
             {
                 "_id": ObjectId,
                 "title": String,
@@ -419,7 +420,7 @@ docker container start lpm-api
   ```json
   {
     "title": String,
-    "description": String
+    "description": String,
     "urlComplaint": String
   }
   ```

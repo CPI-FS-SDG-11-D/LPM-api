@@ -4,8 +4,8 @@ const Feedback = require("../models/Feedback");
 
 async function getComplaint(req, res) {
     const reqUser = req.user;
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const page = req.query.page || 1;
+    const limit = req.query.limit || 10;
     const searchTerm = req.query.title;
     const regexPattern = searchTerm ? new RegExp(`\\b.*${searchTerm}.*\\b`, "i") : null;
     let aggregationPipeline;

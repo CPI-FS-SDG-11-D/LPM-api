@@ -36,7 +36,7 @@ docker container start lpm-api
 - Push your changes to the branch you created
 - Merge your branch into main
 
-## API Documentation Version 2
+## API Documentation
 ### Version 1
 - Base URL: `https://lpm-api.glitch.me/api`
 - Documentation: `https://github.com/CPI-FS-SDG-11-D/LPM-api/tree/e49c6c5b343aa2949a6f96c532286da5ddb0ec0f`

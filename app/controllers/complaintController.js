@@ -130,7 +130,7 @@ async function addComplaint(req, res){
             status: "pending",
             totalUpvotes: 0,
             totalDownvotes: 0,
-            urlComplaint: urlComplaint,
+            urlComplaint,
         };
 
         const complaint = new Complaint(complaintData);
@@ -145,7 +145,7 @@ async function addComplaint(req, res){
 async function updateComplaint(req, res){
     const reqUser = req.user;
     const reqComplaint = req.params;
-    const reqStatus = req.body;
+    const reqStatus = req.body.status;
 
     try {
         const complaint = await Complaint.findOne({ _id: reqComplaint.id });
@@ -154,7 +154,7 @@ async function updateComplaint(req, res){
             return res.status(403).json({ message: "Unauthorized" });
         }
 
-        complaint.status = reqStatus.status;
+        complaint.status = reqStatus;
         await complaint.save();
 
         res.status(200).json({ message: "Complaint updated successfully" });
@@ -176,8 +176,10 @@ async function deleteComplaint(req, res){
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        await Complaint.deleteOne({ _id: complaint._id });
-        await Feedback.deleteMany({ complaintID: complaint._id });
+        await Promise.all([
+            Complaint.deleteOne({ _id: complaint._id }),
+            Feedback.deleteMany({ complaintID: complaint._id })   
+        ])
 
         res.status(200).json({ message: "Complaint deleted successfully" });
     } catch (error) {

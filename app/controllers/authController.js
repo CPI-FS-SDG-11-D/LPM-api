@@ -14,8 +14,7 @@ async function registerUser(req, res){
             return res.status(401).json({ message: 'Email is already registered' });
         }
 
-        const newUser = new User({ username: username, email: email, password: hashedPassword })
-        await newUser.save();
+        const newUser = new User.create({ username, email, password: hashedPassword })
 
         const token = jwt.sign({ userId : newUser._id }, accessToken, { expiresIn: '24h' });
 
@@ -30,19 +29,24 @@ async function loginUser(req, res){
     const { email, password } = req.body;
 
     try {
-        const user = await User.find({ email }, '_id password');
-        const isPasswordValid = await bcrypt.compare(password, user[0].password);
+        const user = await User.findOne({ email });
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        const isPasswordValid = await bcrypt.compare(password, user.password);
 
         if(!isPasswordValid) {
             res.status(401).json({ message: 'Password not match' });
-        } else {
-            const token = jwt.sign({ userId : user[0]._id }, accessToken, {expiresIn: '24h'});
-
-            res.status(200).json({ access_token: token });
         }
+
+        const token = jwt.sign({ userId : user._id }, accessToken, {expiresIn: '24h'});
+
+        res.status(200).json({ access_token: token });
     } catch (err) {
         console.error('Error login user:', err);
-        res.status(404).json({ message: 'User not found' });
+        res.status(500).json({ message: 'Internal server error' });
     }
 }
 
@@ -51,14 +55,19 @@ async function updatePasswordUser(req, res){
     const { oldPassword, newPassword, confirmPassword } = req.body;
 
     try {
-        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
-        const user = await User.find({ _id: reqUser.userId }, 'password');
-        const isPasswordValid = await bcrypt.compare(oldPassword, user[0].password);
+        const user = await User.findById(reqUser.userId);
+        
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+        
+        const isPasswordValid = await bcrypt.compare(oldPassword, user.password);
 
         if(newPassword != confirmPassword || !isPasswordValid){
             res.status(401).json({ message: 'Password not match' });
         }
 
+        const hashedNewPassword = await bcrypt.hash(newPassword, 10);
         await User.findByIdAndUpdate(reqUser.userId, { password: hashedNewPassword }, { new: true, runValidators: true });
 
         res.status(200).json({ message: 'Password successfully updated' });

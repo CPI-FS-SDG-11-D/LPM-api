@@ -1,14 +1,8 @@
 require('dotenv').config();
 
-const cloudinary = require('cloudinary').v2;
+const cloudinary = require('../config/cloudinary');
 const User = require('../models/User');
 
-cloudinary.config({
-    cloud_name: process.env.CLOUD_NAME,
-    api_key: process.env.API_KEY,
-    api_secret: process.env.API_SECRET
-});
-  
 async function imageUser(req, res){
     const reqUser = req.user;
     const reqFile = req.file;

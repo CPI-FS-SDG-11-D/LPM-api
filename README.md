@@ -71,7 +71,7 @@ docker container start lpm-api
   - Success: (200)
     ```json
     {
-      "token": String
+      "access_token": String
     }
     ```
   - Errors: (400)
@@ -105,7 +105,7 @@ docker container start lpm-api
   - Success: (200)
     ```json
     {
-      "token": String
+      "access_token": String
     }
     ```
   - Errors: (404)
